@@ -3,111 +3,14 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>DigitalOps – Project Tracker</title>
-<style>
-:root{--bg:#0b1120;--surface:#131d30;--card:#1a2540;--border:#263352;--accent:#3b82f6;--accent2:#6366f1;--green:#22c55e;--yellow:#eab308;--red:#ef4444;--text:#e2e8f0;--muted:#8899bb;--radius:10px}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif;min-height:100vh}
-.app{display:flex;height:100vh;overflow:hidden}
-.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
-.main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
-.logo{padding:22px 18px 14px}.logo h2{font-size:15px;font-weight:700;color:var(--accent)}.logo p{font-size:11px;color:var(--muted);margin-top:2px}
-.nav{padding:8px 10px;flex:1}
-.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s;margin-bottom:2px}
-.nav-item:hover{background:var(--card);color:var(--text)}.nav-item.active{background:var(--accent);color:#fff}
-.role-switch{padding:14px 12px;border-top:1px solid var(--border)}
-.role-btn{display:block;width:100%;padding:9px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;text-align:center;transition:all .2s;margin-bottom:6px}
-.role-btn.active-role{border-color:var(--accent);color:var(--accent);background:rgba(59,130,246,.1)}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
-.topbar h1{font-size:18px;font-weight:700}
-.topbar-right{display:flex;align-items:center;gap:12px}
-.badge-live{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3);font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600}
-.avatar{width:34px;height:34px;border-radius:50%;background:var(--accent2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
-.content{padding:24px 28px;flex:1}
-.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
-.filter-select,.filter-input{background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;font-size:13px;outline:none;cursor:pointer}
-.filter-input{min-width:200px}.filter-select:focus,.filter-input:focus{border-color:var(--accent)}
-.btn{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s}
-.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#2563eb}
-.btn-ghost{background:var(--card);color:var(--text);border:1px solid var(--border)}.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
-.btn-sm{padding:5px 10px;font-size:11px}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:24px}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
-.stat-card .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-.stat-card .value{font-size:28px;font-weight:800;margin:6px 0 2px}.stat-card .sub{font-size:11px;color:var(--muted)}
-.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-table{width:100%;border-collapse:collapse}
-thead th{padding:12px 16px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);background:var(--surface);border-bottom:1px solid var(--border);white-space:nowrap}
-tbody tr{border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer}
-tbody tr:last-child{border-bottom:none}tbody tr:hover{background:rgba(59,130,246,.05)}
-td{padding:13px 16px;font-size:13px;vertical-align:middle}
-.phase{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
-.phase-dev{background:rgba(99,102,241,.15);color:#818cf8;border:1px solid rgba(99,102,241,.3)}
-.phase-sit{background:rgba(6,182,212,.15);color:#22d3ee;border:1px solid rgba(6,182,212,.3)}
-.phase-uat{background:rgba(234,179,8,.15);color:#fde047;border:1px solid rgba(234,179,8,.3)}
-.phase-pentest{background:rgba(249,115,22,.15);color:#fb923c;border:1px solid rgba(249,115,22,.3)}
-.phase-ccb{background:rgba(168,85,247,.15);color:#c084fc;border:1px solid rgba(168,85,247,.3)}
-.phase-pilot{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3)}
-.phase-live{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
-.prog-wrap{display:flex;align-items:center;gap:8px}
-.prog-bar{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;min-width:80px}
-.prog-fill{height:100%;border-radius:3px;transition:width .4s}
-.prog-label{font-size:12px;font-weight:600;color:var(--muted);width:32px;text-align:right}
-.product-tag{display:inline-block;padding:2px 9px;border-radius:6px;font-size:11px;font-weight:600}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:14px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto}
-.modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid var(--border)}
-.modal-head h3{font-size:16px;font-weight:700}
-.close-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1}
-.modal-body{padding:20px 24px;display:flex;flex-direction:column;gap:14px}
-.field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px}
-.field input,.field select,.field textarea{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13px;outline:none;font-family:inherit}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
-.field textarea{resize:vertical;min-height:70px}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.modal-foot{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
-.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.detail-item{background:var(--surface);border-radius:8px;padding:12px}
-.detail-item .dk{font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
-.detail-item .dv{font-size:13px;font-weight:600}
-.phase-stepper{display:flex;align-items:center;margin:16px 0;overflow-x:auto;padding-bottom:4px}
-.phase-step{display:flex;flex-direction:column;align-items:center;flex:1;min-width:60px}
-.phase-step .dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:var(--surface);z-index:1}
-.phase-step .sname{font-size:9px;color:var(--muted);margin-top:5px;text-align:center}
-.phase-step.done .dot{background:var(--green);border-color:var(--green);color:#fff}
-.phase-step.current .dot{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 4px rgba(59,130,246,.25)}
-.phase-connector{flex:1;height:2px;background:var(--border);margin-top:-14px}
-.phase-connector.done{background:var(--green)}
-.update-log{display:flex;flex-direction:column;gap:10px;max-height:180px;overflow-y:auto}
-.log-item{background:var(--surface);border-radius:8px;padding:10px 12px;font-size:12px}
-.log-item .log-meta{color:var(--muted);font-size:11px;margin-bottom:3px}
-.hd-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
-.hd-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:border-color .2s}
-.hd-card:hover{border-color:var(--accent)}
-.hd-big-prog{margin:10px 0 6px}.hd-big-prog .prog-bar{height:10px;border-radius:5px}
-.hd-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
-.pulse{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(34,197,94,.5);animation:pulse 1.5s infinite;margin-right:4px}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}70%{box-shadow:0 0 0 6px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
-.sync-indicator{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);padding:4px 10px;background:var(--card);border:1px solid var(--border);border-radius:20px}
-.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
-.sync-dot.syncing{background:var(--yellow);animation:pulse 1s infinite}
-.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:200;animation:slideUp .3s ease;max-width:340px}
-.toast-success{background:#166534;color:#bbf7d0;border:1px solid #22c55e}
-.toast-error{background:#7f1d1d;color:#fecaca;border:1px solid #ef4444}
-.toast-info{background:#1e3a5f;color:#bfdbfe;border:1px solid #3b82f6}
-@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-.loading-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:300;gap:16px}
-.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-</style>
-</head>
-<body>
+<title>UBA Digital Banking – Project Tracker</title>
 
-<!-- ══════════════════════════════════════════════════════
-  PASTE YOUR FIREBASE CONFIG HERE (from Firebase Console)
-  Project Settings → Your Apps → SDK Setup → Config
-════════════════════════════════════════════════════════ -->
+<!-- Chart.js for analytics -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- jsPDF for export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
 <script>
 var FIREBASE_CONFIG = {
   apiKey: "AIzaSyDB1Upcp3QmFYOKYR9PTK36iNviNiJtUFc",
@@ -119,37 +22,286 @@ var FIREBASE_CONFIG = {
   appId: "1:798551482503:web:4e66c4e57149264a105822"
 };
 </script>
-
-<!-- Firebase SDKs (loaded as regular scripts — no module scope issues) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-<div class="loading-screen" id="loading-screen">
-  <div style="font-size:32px">⚡</div>
-  <div class="spinner"></div>
-  <div style="font-size:14px;color:var(--muted)" id="loading-msg">Connecting to Firebase…</div>
-</div>
+<style>
+/* ── UBA DESIGN TOKENS ── */
+:root{
+  --uba-red:#C8102E;        /* UBA red — used sparingly */
+  --uba-red-soft:#f8e8eb;   /* very light red tint */
+  --uba-red-mid:rgba(200,16,46,.12);
+  --bg:#0d1117;             /* near-black background */
+  --surface:#161b22;        /* sidebar / topbar */
+  --card:#1c2330;           /* card background */
+  --card2:#212836;          /* slightly lighter card */
+  --border:#2a3444;         /* subtle borders */
+  --accent:#C8102E;         /* UBA red as accent */
+  --accent2:#1a56db;        /* blue for secondary actions */
+  --green:#16a34a;
+  --green-soft:rgba(22,163,74,.12);
+  --amber:#d97706;
+  --amber-soft:rgba(217,119,6,.12);
+  --red-soft:rgba(200,16,46,.12);
+  --text:#e6edf3;
+  --text2:#8b949e;
+  --radius:10px;
+  --shadow:0 4px 24px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh}
+.app{display:flex;height:100vh;overflow:hidden}
 
-<div class="app" id="app" style="display:none">
-  <div class="sidebar">
-    <div class="logo"><h2>⚡ DigitalOps</h2><p>Project Tracker</p></div>
-    <nav class="nav" id="nav"></nav>
-    <div class="role-switch">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;text-align:center">SWITCH VIEW</div>
-      <button class="role-btn active-role" id="btn-pm" onclick="setRole('pm')">📋 Product Manager</button>
-      <button class="role-btn" id="btn-hd" onclick="setRole('hd')">👁️ Head of Digital</button>
+/* ── SIDEBAR ── */
+.sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.sidebar-logo{padding:20px 18px 16px;border-bottom:1px solid var(--border)}
+.uba-logo{display:flex;align-items:center;gap:10px}
+.uba-emblem{width:38px;height:38px;background:var(--uba-red);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#fff;letter-spacing:-1px;flex-shrink:0;box-shadow:0 2px 8px rgba(200,16,46,.35)}
+.uba-text h2{font-size:14px;font-weight:800;color:var(--text);letter-spacing:.3px}
+.uba-text p{font-size:10px;color:var(--text2);margin-top:1px;text-transform:uppercase;letter-spacing:.6px}
+.nav{padding:12px 10px;flex:1}
+.nav-section{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;padding:8px 12px 4px;margin-top:4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text2);transition:all .18s;margin-bottom:1px}
+.nav-item:hover{background:var(--card);color:var(--text)}
+.nav-item.active{background:var(--uba-red-mid);color:var(--uba-red);border:1px solid rgba(200,16,46,.2)}
+.nav-item .nav-icon{width:18px;text-align:center;flex-shrink:0}
+.role-switch{padding:14px 12px;border-top:1px solid var(--border)}
+.role-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;text-align:center}
+.role-btn{display:block;width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:12px;cursor:pointer;text-align:left;transition:all .18s;margin-bottom:5px;display:flex;align-items:center;gap:8px}
+.role-btn:hover{background:var(--card);color:var(--text)}
+.role-btn.active-role{border-color:var(--uba-red);color:var(--uba-red);background:var(--uba-red-mid)}
+
+/* ── MAIN ── */
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;min-width:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;gap:16px}
+.topbar-left h1{font-size:17px;font-weight:700}
+.topbar-left p{font-size:12px;color:var(--text2);margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sync-pill{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);padding:4px 10px;background:var(--card);border:1px solid var(--border);border-radius:20px}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0}
+.sync-dot.syncing{background:var(--amber);animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.uba-badge{background:var(--uba-red-mid);color:var(--uba-red);border:1px solid rgba(200,16,46,.25);font-size:11px;padding:4px 11px;border-radius:20px;font-weight:700;letter-spacing:.3px}
+.avatar-chip{width:34px;height:34px;border-radius:50%;background:var(--uba-red);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#fff;flex-shrink:0}
+
+/* ── CONTENT ── */
+.content{padding:24px 28px;flex:1}
+
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.red::before{background:var(--uba-red)}
+.stat-card.green::before{background:var(--green)}
+.stat-card.amber::before{background:var(--amber)}
+.stat-card.blue::before{background:var(--accent2)}
+.stat-card.gray::before{background:var(--border)}
+.stat-card .s-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.stat-card .s-val{font-size:30px;font-weight:800;margin:6px 0 2px;line-height:1}
+.stat-card .s-sub{font-size:11px;color:var(--text2)}
+
+/* ── FILTERS ── */
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
+.filter-select,.filter-input{background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;font-size:13px;outline:none;cursor:pointer;transition:border-color .15s}
+.filter-input{min-width:220px}
+.filter-select:focus,.filter-input:focus{border-color:var(--uba-red)}
+.btn{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-uba{background:var(--uba-red);color:#fff}.btn-uba:hover{background:#a50d25}
+.btn-ghost{background:var(--card);color:var(--text);border:1px solid var(--border)}.btn-ghost:hover{border-color:var(--uba-red);color:var(--uba-red)}
+.btn-blue{background:var(--accent2);color:#fff}.btn-blue:hover{background:#1647c5}
+.btn-sm{padding:5px 11px;font-size:11px}
+
+/* ── TABLE ── */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead th{padding:11px 16px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);background:var(--surface);border-bottom:1px solid var(--border);white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer}
+tbody tr:last-child{border-bottom:none}tbody tr:hover{background:rgba(200,16,46,.04)}
+td{padding:13px 16px;font-size:13px;vertical-align:middle}
+
+/* ── PHASE BADGES ── */
+.phase{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.ph-dev{background:rgba(99,102,241,.15);color:#a5b4fc;border:1px solid rgba(99,102,241,.25)}
+.ph-sit{background:rgba(6,182,212,.12);color:#67e8f9;border:1px solid rgba(6,182,212,.25)}
+.ph-uat{background:rgba(234,179,8,.12);color:#fde68a;border:1px solid rgba(234,179,8,.25)}
+.ph-pentest{background:rgba(249,115,22,.12);color:#fdba74;border:1px solid rgba(249,115,22,.25)}
+.ph-ccb{background:rgba(168,85,247,.12);color:#d8b4fe;border:1px solid rgba(168,85,247,.25)}
+.ph-pilot{background:rgba(26,86,219,.12);color:#93c5fd;border:1px solid rgba(26,86,219,.25)}
+.ph-live{background:rgba(22,163,74,.12);color:#86efac;border:1px solid rgba(22,163,74,.25)}
+
+/* ── RAG BADGE ── */
+.rag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.rag-g{background:var(--green-soft);color:#4ade80;border:1px solid rgba(22,163,74,.3)}
+.rag-a{background:var(--amber-soft);color:#fbbf24;border:1px solid rgba(217,119,6,.3)}
+.rag-r{background:var(--red-soft);color:#f87171;border:1px solid rgba(200,16,46,.3)}
+
+/* ── PROGRESS ── */
+.prog-wrap{display:flex;align-items:center;gap:8px}
+.prog-bar{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;min-width:70px}
+.prog-fill{height:100%;border-radius:3px;transition:width .4s}
+.prog-lbl{font-size:12px;font-weight:600;color:var(--text2);width:32px;text-align:right}
+
+/* ── PRODUCT TAG ── */
+.ptag{display:inline-block;padding:2px 9px;border-radius:6px;font-size:11px;font-weight:600}
+
+/* ── AVATAR INITIAL ── */
+.av{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0}
+
+/* ── OVERDUE FLAG ── */
+.overdue-flag{display:inline-flex;align-items:center;gap:3px;font-size:10px;color:#f87171;font-weight:600;margin-left:6px}
+
+/* ── MODALS ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:14px;width:100%;max-width:580px;max-height:92vh;overflow-y:auto;box-shadow:var(--shadow)}
+.modal-lg{max-width:700px}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 24px 14px;border-bottom:1px solid var(--border)}
+.modal-head h3{font-size:16px;font-weight:700}
+.modal-head .mh-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.close-btn{background:none;border:none;color:var(--text2);cursor:pointer;font-size:20px;line-height:1;padding:2px 6px;border-radius:4px}
+.close-btn:hover{background:var(--card2);color:var(--text)}
+.modal-body{padding:20px 24px;display:flex;flex-direction:column;gap:14px}
+.field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);margin-bottom:6px;font-weight:600}
+.field input,.field select,.field textarea{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13px;outline:none;font-family:inherit;transition:border-color .15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--uba-red)}
+.field textarea{resize:vertical;min-height:70px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.modal-foot{padding:14px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
+
+/* ── DETAIL ── */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.di{background:var(--surface);border-radius:8px;padding:12px}
+.di .dk{font-size:10px;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.di .dv{font-size:13px;font-weight:600}
+.phase-stepper{display:flex;align-items:center;margin:14px 0;overflow-x:auto;padding-bottom:4px}
+.ps{display:flex;flex-direction:column;align-items:center;flex:1;min-width:56px}
+.ps .dot{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;background:var(--surface);z-index:1}
+.ps .sn{font-size:8px;color:var(--text2);margin-top:4px;text-align:center}
+.ps.done .dot{background:var(--green);border-color:var(--green);color:#fff}
+.ps.current .dot{background:var(--uba-red);border-color:var(--uba-red);color:#fff;box-shadow:0 0 0 4px rgba(200,16,46,.2)}
+.pc{flex:1;height:2px;background:var(--border);margin-top:-13px}
+.pc.done{background:var(--green)}
+.update-log{display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto}
+.log-item{background:var(--surface);border-radius:8px;padding:10px 12px;font-size:12px;border-left:3px solid var(--border)}
+.log-item.log-new{border-left-color:var(--uba-red)}
+.log-meta{color:var(--text2);font-size:11px;margin-bottom:3px;display:flex;justify-content:space-between}
+
+/* ── HD CARDS ── */
+.hd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px}
+.hd-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:all .2s;position:relative}
+.hd-card:hover{border-color:var(--uba-red);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.hd-card .overdue-banner{background:var(--red-soft);border:1px solid rgba(200,16,46,.25);border-radius:6px;padding:5px 10px;font-size:11px;color:#f87171;margin-bottom:10px;display:flex;align-items:center;gap:5px}
+
+/* ── ANALYTICS ── */
+.analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:4px}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.chart-card h3{font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px}
+.chart-wrap{position:relative;height:220px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:300;animation:slideUp .3s ease;max-width:360px;display:flex;align-items:center;gap:8px}
+.ts-success{background:#0f2419;color:#86efac;border:1px solid var(--green)}
+.ts-error{background:#200a0a;color:#fca5a5;border:1px solid var(--uba-red)}
+.ts-info{background:#0c1929;color:#93c5fd;border:1px solid var(--accent2)}
+@keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ── LOADING ── */
+.loading-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:400;gap:18px}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--uba-red);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── PIN SCREEN ── */
+.pin-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:500}
+.pin-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:36px 40px;width:380px;text-align:center;box-shadow:var(--shadow)}
+.pin-logo{width:56px;height:56px;background:var(--uba-red);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff;margin:0 auto 16px}
+.pin-card h2{font-size:20px;font-weight:800;margin-bottom:4px}
+.pin-card p{font-size:13px;color:var(--text2);margin-bottom:24px}
+.pin-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}
+.pin-btn{padding:14px;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:14px;font-weight:700;cursor:pointer;transition:all .15s}
+.pin-btn:hover{border-color:var(--uba-red);color:var(--uba-red);background:var(--uba-red-mid)}
+.pin-btn.active-pin{border-color:var(--uba-red);background:var(--uba-red);color:#fff}
+.pin-input-row{display:flex;gap:10px;justify-content:center;margin:20px 0 8px}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border);transition:all .2s}
+.pin-dot.filled{background:var(--uba-red);border-color:var(--uba-red)}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- ── PIN / ROLE SELECTION SCREEN ── -->
+<div class="pin-screen" id="pin-screen">
+  <div class="pin-card">
+    <div class="pin-logo">UBA</div>
+    <h2>Digital Banking Ops</h2>
+    <p>Select your role to continue</p>
+    <div class="pin-btns">
+      <button class="pin-btn" onclick="selectPinRole('pm')">📋<br><span style="font-size:12px;font-weight:600">Product Manager</span></button>
+      <button class="pin-btn" onclick="selectPinRole('hd')">👁️<br><span style="font-size:12px;font-weight:600">Head of Digital</span></button>
+    </div>
+    <div id="pin-section" style="display:none;margin-top:20px">
+      <p style="font-size:12px;color:var(--text2);margin-bottom:0">Enter 4-digit PIN</p>
+      <div class="pin-input-row" id="pin-dots">
+        <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
+        <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:220px;margin:0 auto">
+        <button class="pin-btn" style="padding:12px" onclick="pinKey('1')">1</button>
+        <button class="pin-btn" style="padding:12px" onclick="pinKey('2')">2</button>
+        <button class="pin-btn" style="padding:12px" onclick="pinKey('3')">3</button>
+        <button class="pin-btn" style="padding:12px" onclick="pinKey('4')">4</button>
+        <button class="pin-btn" style="padding:12px" onclick="pinKey('5')">5</button>
+        <button class="pin-btn" style="padding:12px" onclick="pinKey('6')">6</button>
+        <button class="pin-btn" style="padding:12px" onclick="pinKey('7')">7</button>
+        <button class="pin-btn" style="padding:12px" onclick="pinKey('8')">8</button>
+        <button class="pin-btn" style="padding:12px" onclick="pinKey('9')">9</button>
+        <button class="pin-btn" style="padding:12px;grid-column:span 2" onclick="pinKey('0')">0</button>
+        <button class="pin-btn" style="padding:12px" onclick="pinBack()">⌫</button>
+      </div>
+      <p id="pin-err" style="color:#f87171;font-size:12px;margin-top:10px;min-height:18px"></p>
     </div>
   </div>
+</div>
+
+<!-- ── LOADING ── -->
+<div class="loading-screen" id="loading-screen" style="display:none">
+  <div class="uba-emblem" style="width:52px;height:52px;font-size:20px">UBA</div>
+  <div class="spinner"></div>
+  <div style="font-size:13px;color:var(--text2)" id="loading-msg">Connecting to Firebase…</div>
+</div>
+
+<!-- ── MAIN APP ── -->
+<div class="app" id="app" style="display:none">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="uba-logo">
+        <div class="uba-emblem">UBA</div>
+        <div class="uba-text">
+          <h2>Digital Banking</h2>
+          <p>Project Tracker</p>
+        </div>
+      </div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="role-switch">
+      <div class="role-label">Switch View</div>
+      <button class="role-btn active-role" id="btn-pm" onclick="setRole('pm')"><span>📋</span>Product Manager</button>
+      <button class="role-btn" id="btn-hd" onclick="setRole('hd')"><span>👁️</span>Head of Digital</button>
+      <button class="role-btn" style="margin-top:4px;border-color:var(--border)" onclick="showPinScreen()"><span>🔓</span>Switch Account</button>
+    </div>
+  </div>
+
   <div class="main">
     <div class="topbar">
-      <div>
+      <div class="topbar-left">
         <h1 id="page-title">Project Tracker</h1>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px" id="page-sub">Digital Banking Department</div>
+        <p id="page-sub">Digital Banking Department · United Bank for Africa</p>
       </div>
       <div class="topbar-right">
-        <div class="sync-indicator"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Connecting…</span></div>
-        <span class="badge-live"><span class="pulse"></span>Firebase Live</span>
-        <div class="avatar" id="avatar-init">PM</div>
+        <div class="sync-pill"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Live</span></div>
+        <span class="uba-badge">UBA</span>
+        <div class="avatar-chip" id="avatar-chip">PM</div>
       </div>
     </div>
     <div class="content" id="content"></div>
@@ -159,15 +311,12 @@ var FIREBASE_CONFIG = {
 <!-- ADD/EDIT MODAL -->
 <div class="overlay" id="modal" style="display:none">
   <div class="modal">
-    <div class="modal-head"><h3 id="modal-title">Add New Project</h3><button class="close-btn" onclick="closeModal()">✕</button></div>
+    <div class="modal-head"><div><h3 id="modal-title">Add New Project</h3></div><button class="close-btn" onclick="closeModal()">✕</button></div>
     <div class="modal-body">
       <div class="row2">
         <div class="field"><label>Project Name</label><input id="f-name" placeholder="e.g. Card Tokenization"/></div>
         <div class="field"><label>Product / Team</label>
-          <select id="f-product">
-            <option>Mobile App</option><option>Internet Banking</option><option>Leo</option>
-            <option>POS</option><option>Web Team</option><option>Cards</option><option>USSD</option>
-          </select>
+          <select id="f-product"><option>Mobile App</option><option>Internet Banking</option><option>Leo</option><option>POS</option><option>Web Team</option><option>Cards</option><option>USSD</option></select>
         </div>
       </div>
       <div class="row2">
@@ -176,10 +325,7 @@ var FIREBASE_CONFIG = {
       </div>
       <div class="row2">
         <div class="field"><label>Current Phase</label>
-          <select id="f-phase">
-            <option>Development</option><option>SIT</option><option>UAT</option>
-            <option>PENTEST</option><option>CCB</option><option>Pilot</option><option>Live</option>
-          </select>
+          <select id="f-phase"><option>Development</option><option>SIT</option><option>UAT</option><option>PENTEST</option><option>CCB</option><option>Pilot</option><option>Live</option></select>
         </div>
         <div class="field"><label>Progress (%)</label><input id="f-progress" type="number" min="0" max="100" placeholder="0–100"/></div>
       </div>
@@ -191,7 +337,7 @@ var FIREBASE_CONFIG = {
     </div>
     <div class="modal-foot">
       <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveProject()">Save Project</button>
+      <button class="btn btn-uba" onclick="saveProject()">💾 Save Project</button>
     </div>
   </div>
 </div>
@@ -202,41 +348,38 @@ var FIREBASE_CONFIG = {
     <div class="modal-head"><h3 id="um-title">Post Update</h3><button class="close-btn" onclick="closeUpdateModal()">✕</button></div>
     <div class="modal-body">
       <div class="field"><label>Current Phase</label>
-        <select id="u-phase">
-          <option>Development</option><option>SIT</option><option>UAT</option>
-          <option>PENTEST</option><option>CCB</option><option>Pilot</option><option>Live</option>
-        </select>
+        <select id="u-phase"><option>Development</option><option>SIT</option><option>UAT</option><option>PENTEST</option><option>CCB</option><option>Pilot</option><option>Live</option></select>
       </div>
       <div class="field"><label>Progress (%)</label><input id="u-progress" type="number" min="0" max="100"/></div>
-      <div class="field"><label>Update Note *</label><textarea id="u-note" placeholder="Describe what has changed…"></textarea></div>
+      <div class="field"><label>Update Note *</label><textarea id="u-note" placeholder="Describe what changed or current status…"></textarea></div>
     </div>
     <div class="modal-foot">
       <button class="btn btn-ghost" onclick="closeUpdateModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="submitUpdate()">Post Update</button>
+      <button class="btn btn-uba" onclick="submitUpdate()">📤 Post Update</button>
     </div>
   </div>
 </div>
 
 <!-- DETAIL MODAL -->
 <div class="overlay" id="detail-modal" style="display:none">
-  <div class="modal" style="max-width:620px">
+  <div class="modal modal-lg">
     <div class="modal-head"><h3 id="dm-title">Project Detail</h3><button class="close-btn" onclick="closeDetailModal()">✕</button></div>
     <div class="modal-body" id="dm-body"></div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-// ALL JAVASCRIPT — regular script tag, fully global scope
-// No module imports = no scope issues = filters work 100%
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// UBA DIGITAL BANKING — PROJECT TRACKER v3.0
+// ═══════════════════════════════════════════════
 
 var PHASES = ['Development','SIT','UAT','PENTEST','CCB','Pilot','Live'];
-var PCLS = {Development:'phase-dev',SIT:'phase-sit',UAT:'phase-uat',PENTEST:'phase-pentest',CCB:'phase-ccb',Pilot:'phase-pilot',Live:'phase-live'};
-var PCOL = {'Mobile App':'#3b82f6','Internet Banking':'#6366f1','Leo':'#a855f7','POS':'#06b6d4','Web Team':'#22c55e','Cards':'#f97316','USSD':'#eab308'};
-var DB_PATH = 'digitalops/projects';
+var PCLS   = {Development:'ph-dev',SIT:'ph-sit',UAT:'ph-uat',PENTEST:'ph-pentest',CCB:'ph-ccb',Pilot:'ph-pilot',Live:'ph-live'};
+var PCOL   = {'Mobile App':'#3b82f6','Internet Banking':'#6366f1','Leo':'#a855f7','POS':'#06b6d4','Web Team':'#16a34a','Cards':'#C8102E','USSD':'#d97706'};
+var DB_PATH = 'uba-digitalops/projects';
 
-function pc(p){ return p>=80?'#22c55e':p>=50?'#3b82f6':p>=25?'#eab308':'#ef4444'; }
+// PINs — change these to your real PINs
+var PINS = { pm: '1234', hd: '5678' };
 
 var db = null;
 var role = 'pm';
@@ -244,52 +387,85 @@ var currentPage = 'projects';
 var updateId = null;
 var editId = null;
 var projects = [];
-var fProd = 'all';
-var fPhase = 'all';
-var fSearch = '';
-var hdProd = 'all';
-var hdPhase = 'all';
+var fProd='all', fPhase='all', fSearch='', fRAG='all';
+var hdProd='all', hdPhase='all', hdRAG='all';
 var configured = false;
+var pinRole = '';
+var pinBuffer = '';
 
-// ── FIREBASE INIT ──
+// ── PIN SYSTEM ──
+function selectPinRole(r) {
+  pinRole = r;
+  document.getElementById('pin-section').style.display = 'block';
+  pinBuffer = '';
+  updatePinDots();
+  document.getElementById('pin-err').textContent = '';
+}
+function pinKey(k) {
+  if (pinBuffer.length >= 4) return;
+  pinBuffer += k;
+  updatePinDots();
+  if (pinBuffer.length === 4) setTimeout(checkPin, 200);
+}
+function pinBack() {
+  pinBuffer = pinBuffer.slice(0,-1);
+  updatePinDots();
+}
+function updatePinDots() {
+  for (var i=0;i<4;i++) {
+    document.getElementById('pd'+i).className = 'pin-dot' + (i < pinBuffer.length ? ' filled' : '');
+  }
+}
+function checkPin() {
+  if (pinBuffer === PINS[pinRole]) {
+    document.getElementById('pin-screen').style.display = 'none';
+    document.getElementById('loading-screen').style.display = 'flex';
+    role = pinRole;
+    initApp();
+  } else {
+    document.getElementById('pin-err').textContent = 'Incorrect PIN. Try again.';
+    pinBuffer = '';
+    updatePinDots();
+  }
+}
+function showPinScreen() {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('pin-screen').style.display = 'flex';
+  document.getElementById('pin-section').style.display = 'none';
+  pinBuffer = '';
+}
+
+// ── FIREBASE ──
 function initApp() {
   configured = FIREBASE_CONFIG.apiKey !== "PASTE_YOUR_apiKey_HERE";
-
   if (configured) {
     try {
-      firebase.initializeApp(FIREBASE_CONFIG);
+      if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
       db = firebase.database();
       startListening();
     } catch(e) {
       document.getElementById('loading-msg').textContent = '❌ Firebase error: ' + e.message;
     }
   } else {
-    // Demo mode — works locally without Firebase
     projects = seedData();
-    hideLoading();
-    renderNav();
-    renderContent();
+    showApp();
   }
 }
 
-// ── REAL-TIME LISTENER ──
-// This is the magic: onValue fires instantly on ANY device when data changes
 function startListening() {
-  db.ref(DB_PATH).on('value', function(snapshot) {
-    var data = snapshot.val();
+  db.ref(DB_PATH).on('value', function(snap) {
+    var data = snap.val();
     if (data) {
-      projects = Object.values(data).sort(function(a,b){ return a.id - b.id; });
+      projects = Object.values(data).sort(function(a,b){ return a.id-b.id; });
     } else {
       projects = seedData();
       saveToFirebase();
     }
-    document.getElementById('sync-label').textContent = 'Live ✓';
     document.getElementById('sync-dot').className = 'sync-dot';
-    hideLoading();
-    renderContent();
+    document.getElementById('sync-label').textContent = 'Live ✓';
+    showApp();
   }, function(err) {
-    document.getElementById('loading-msg').textContent = '❌ Firebase failed. Check your databaseURL in the config.';
-    console.error(err);
+    document.getElementById('loading-msg').textContent = '❌ Firebase failed. Check your databaseURL.';
   });
 }
 
@@ -300,24 +476,443 @@ function saveToFirebase() {
   projects.forEach(function(p){ obj[p.id] = p; });
   db.ref(DB_PATH).set(obj)
     .then(function(){ setSyncing(false); })
-    .catch(function(e){ setSyncing(false); toast('Save error: ' + e.message, 'error'); });
+    .catch(function(e){ setSyncing(false); toast('Save error: '+e.message,'error'); });
 }
 
 function setSyncing(on) {
-  var d = document.getElementById('sync-dot');
-  var l = document.getElementById('sync-label');
-  if (!d) return;
-  d.className = 'sync-dot' + (on ? ' syncing' : '');
-  l.textContent = on ? 'Saving…' : 'Live ✓';
+  var d=document.getElementById('sync-dot'), l=document.getElementById('sync-label');
+  if(!d)return;
+  d.className='sync-dot'+(on?' syncing':'');
+  l.textContent=on?'Saving…':'Live ✓';
 }
 
-function hideLoading() {
-  document.getElementById('loading-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
+function showApp() {
+  document.getElementById('loading-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  renderNav(); renderContent();
+}
+
+// ── RAG LOGIC ──
+function getRAG(p) {
+  if (p.phase === 'Live') return 'G';
+  if (!p.target) return p.progress >= 60 ? 'G' : p.progress >= 30 ? 'A' : 'R';
+  var today = new Date(), target = new Date(p.target);
+  var daysLeft = Math.ceil((target - today) / 86400000);
+  var phaseIdx = PHASES.indexOf(p.phase);
+  var expectedProg = Math.round(((phaseIdx+1)/PHASES.length)*100);
+  if (daysLeft < 0) return 'R'; // overdue
+  if (p.progress >= expectedProg - 5) return 'G';
+  if (p.progress >= expectedProg - 20) return 'A';
+  return 'R';
+}
+function ragBadge(r) {
+  if (r==='G') return '<span class="rag rag-g">● On Track</span>';
+  if (r==='A') return '<span class="rag rag-a">● At Risk</span>';
+  return '<span class="rag rag-r">● Off Track</span>';
+}
+function ragColor(r){ return r==='G'?'#16a34a':r==='A'?'#d97706':'#C8102E'; }
+function isOverdue(p) {
+  if (!p.target || p.phase==='Live') return false;
+  return new Date(p.target) < new Date();
+}
+function pc(p){ return p>=80?'#16a34a':p>=50?'#1a56db':p>=25?'#d97706':'#C8102E'; }
+function initials(name){ return name.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase(); }
+function avColor(name){ var h=['#C8102E','#1a56db','#a855f7','#d97706','#06b6d4','#16a34a','#6366f1']; var i=name.charCodeAt(0)%h.length; return h[i]; }
+
+// ── NAV ──
+function renderNav() {
+  var pmItems = [
+    {id:'projects',icon:'📋',label:'All Projects'},
+    {id:'add',icon:'➕',label:'Add Project'},
+  ];
+  var hdItems = [
+    {id:'dashboard',icon:'📊',label:'Live Dashboard'},
+    {id:'projects',icon:'📋',label:'All Projects'},
+    {id:'analytics',icon:'📈',label:'Analytics'},
+  ];
+  var items = role==='pm' ? pmItems : hdItems;
+  document.getElementById('nav').innerHTML =
+    '<div class="nav-section">Navigation</div>'
+    + items.map(function(i){
+        return '<div class="nav-item '+(currentPage===i.id?'active':'')+'" onclick="navigate(\''+i.id+'\')">'
+          +'<span class="nav-icon">'+i.icon+'</span>'+i.label+'</div>';
+      }).join('');
+  document.getElementById('btn-pm').className='role-btn'+(role==='pm'?' active-role':'');
+  document.getElementById('btn-hd').className='role-btn'+(role==='hd'?' active-role':'');
+  document.getElementById('avatar-chip').textContent=role==='hd'?'HD':'PM';
+  document.getElementById('page-sub').textContent=role==='hd'
+    ?'Head of Digital Banking · United Bank for Africa'
+    :'Product Manager View · United Bank for Africa';
+}
+
+function navigate(p) {
+  if (p==='add'){ currentPage='projects'; renderNav(); openAddModal(); return; }
+  currentPage=p; renderNav(); renderContent();
+}
+
+function setRole(r) {
+  role=r; currentPage=r==='hd'?'dashboard':'projects';
+  renderNav(); renderContent();
+}
+
+function renderContent() {
+  if (currentPage==='dashboard' && role==='hd'){ renderHD(); return; }
+  if (currentPage==='analytics'){ renderAnalytics(); return; }
+  renderTable();
+}
+
+// ── TABLE ──
+function renderTable() {
+  document.getElementById('page-title').textContent='All Projects';
+  var f = projects.filter(function(p){
+    if (fProd!=='all' && p.product!==fProd) return false;
+    if (fPhase!=='all' && p.phase!==fPhase) return false;
+    if (fRAG!=='all' && getRAG(p)!==fRAG) return false;
+    if (fSearch && p.name.toLowerCase().indexOf(fSearch.toLowerCase())===-1
+               && p.ba.toLowerCase().indexOf(fSearch.toLowerCase())===-1
+               && p.pm.toLowerCase().indexOf(fSearch.toLowerCase())===-1) return false;
+    return true;
+  });
+  var live=projects.filter(function(p){return p.phase==='Live';}).length;
+  var onTrack=projects.filter(function(p){return getRAG(p)==='G';}).length;
+  var atRisk=projects.filter(function(p){return getRAG(p)==='A';}).length;
+  var offTrack=projects.filter(function(p){return getRAG(p)==='R';}).length;
+  var avg=Math.round(projects.reduce(function(a,p){return a+p.progress;},0)/(projects.length||1));
+
+  var prodOpts=Object.keys(PCOL).map(function(p){return '<option value="'+p+'"'+(fProd===p?' selected':'')+'>'+p+'</option>';}).join('');
+  var phaseOpts=PHASES.map(function(ph){return '<option value="'+ph+'"'+(fPhase===ph?' selected':'')+'>'+ph+'</option>';}).join('');
+
+  var rows = f.length===0
+    ? '<tr><td colspan="10" style="text-align:center;padding:36px;color:var(--text2)">No projects match the selected filters</td></tr>'
+    : f.map(function(p){
+        var rag=getRAG(p), od=isOverdue(p);
+        var btns=role==='pm'
+          ?'<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openUpdateModal('+p.id+')">Update</button> <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openEditModal('+p.id+')">Edit</button>'
+          :'—';
+        var odFlag=od?'<span class="overdue-flag">⚠ Overdue</span>':'';
+        return '<tr onclick="openDetail('+p.id+')">'
+          +'<td><div style="display:flex;align-items:center;gap:8px"><div class="av" style="background:'+avColor(p.pm)+'">'+initials(p.pm)+'</div></div></td>'
+          +'<td style="font-weight:600">'+p.name+odFlag+'</td>'
+          +'<td><span class="ptag" style="background:'+PCOL[p.product]+'22;color:'+PCOL[p.product]+';border:1px solid '+PCOL[p.product]+'33">'+p.product+'</span></td>'
+          +'<td style="font-size:12px">'+p.ba+'</td>'
+          +'<td style="font-size:12px">'+p.pm+'</td>'
+          +'<td><span class="phase '+PCLS[p.phase]+'">'+p.phase+'</span></td>'
+          +'<td>'+ragBadge(rag)+'</td>'
+          +'<td><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:'+p.progress+'%;background:'+pc(p.progress)+'"></div></div><span class="prog-lbl">'+p.progress+'%</span></div></td>'
+          +'<td style="color:var(--text2);font-size:12px">'+(p.target||'—')+'</td>'
+          +'<td onclick="event.stopPropagation()">'+btns+'</td>'
+          +'</tr>';
+      }).join('');
+
+  document.getElementById('content').innerHTML=
+    '<div class="stats">'
+    +'<div class="stat-card red"><div class="s-label">Total Projects</div><div class="s-val">'+projects.length+'</div><div class="s-sub">Across all products</div></div>'
+    +'<div class="stat-card green"><div class="s-label">On Track</div><div class="s-val" style="color:#4ade80">'+onTrack+'</div><div class="s-sub">RAG Green</div></div>'
+    +'<div class="stat-card amber"><div class="s-label">At Risk</div><div class="s-val" style="color:#fbbf24">'+atRisk+'</div><div class="s-sub">RAG Amber</div></div>'
+    +'<div class="stat-card gray"><div class="s-label">Off Track</div><div class="s-val" style="color:#f87171">'+offTrack+'</div><div class="s-sub">RAG Red</div></div>'
+    +'<div class="stat-card blue"><div class="s-label">Live</div><div class="s-val" style="color:#93c5fd">'+live+'</div><div class="s-sub">Deployed</div></div>'
+    +'<div class="stat-card gray"><div class="s-label">Avg Progress</div><div class="s-val" style="color:'+pc(avg)+'">'+avg+'%</div><div class="s-sub">Overall</div></div>'
+    +'</div>'
+    +'<div class="filters">'
+    +'<input class="filter-input" placeholder="🔍  Search project, BA, or PM…" value="'+fSearch+'" oninput="fSearch=this.value;renderTable()"/>'
+    +'<select class="filter-select" onchange="fProd=this.value;renderTable()"><option value="all"'+(fProd==='all'?' selected':'')+'>All Products</option>'+prodOpts+'</select>'
+    +'<select class="filter-select" onchange="fPhase=this.value;renderTable()"><option value="all"'+(fPhase==='all'?' selected':'')+'>All Phases</option>'+phaseOpts+'</select>'
+    +'<select class="filter-select" onchange="fRAG=this.value;renderTable()"><option value="all"'+(fRAG==='all'?' selected':'')+'>All RAG</option><option value="G"'+(fRAG==='G'?' selected':'')+'>🟢 On Track</option><option value="A"'+(fRAG==='A'?' selected':'')+'>🟡 At Risk</option><option value="R"'+(fRAG==='R'?' selected':'')+'>🔴 Off Track</option></select>'
+    +(role==='pm'?'<button class="btn btn-uba" onclick="openAddModal()">＋ New Project</button>':'')
+    +(role==='hd'?'<button class="btn btn-ghost" onclick="exportPDF()">📄 Export PDF</button>':'')
+    +'</div>'
+    +'<div class="table-wrap"><table>'
+    +'<thead><tr><th></th><th>Project Name</th><th>Product</th><th>Business Analyst</th><th>Product Manager</th><th>Phase</th><th>RAG Status</th><th>Progress</th><th>Target</th><th>Actions</th></tr></thead>'
+    +'<tbody>'+rows+'</tbody>'
+    +'</table></div>';
+}
+
+// ── HD DASHBOARD ──
+function renderHD() {
+  document.getElementById('page-title').textContent='Head of Digital – Live Dashboard';
+  var byPhase={};
+  PHASES.forEach(function(ph){ byPhase[ph]=projects.filter(function(p){return p.phase===ph;}).length; });
+  var f=projects.filter(function(p){
+    if(hdProd!=='all'&&p.product!==hdProd) return false;
+    if(hdPhase!=='all'&&p.phase!==hdPhase) return false;
+    if(hdRAG!=='all'&&getRAG(p)!==hdRAG) return false;
+    return true;
+  });
+  var prodOpts=Object.keys(PCOL).map(function(p){return '<option value="'+p+'"'+(hdProd===p?' selected':'')+'>'+p+'</option>';}).join('');
+  var phaseOpts=PHASES.map(function(ph){return '<option value="'+ph+'"'+(hdPhase===ph?' selected':'')+'>'+ph+'</option>';}).join('');
+
+  var cards=f.map(function(p){
+    var pi=PHASES.indexOf(p.phase), logs=p.logs||[], ll=logs.length?logs[logs.length-1]:null;
+    var rag=getRAG(p), od=isOverdue(p);
+    var stepper=PHASES.map(function(ph,i){
+      var done=i<pi,cur=i===pi;
+      return (i>0?'<div class="pc '+(done||cur?'done':'')+'"></div>':'')
+        +'<div class="ps '+(done?'done':cur?'current':'')+'"><div class="dot">'+(done?'✓':(i+1))+'</div><div class="sn">'+ph+'</div></div>';
+    }).join('');
+    var border=p.phase==='Live'?'rgba(22,163,74,.4)':rag==='R'?'rgba(200,16,46,.35)':rag==='A'?'rgba(217,119,6,.3)':'var(--border)';
+    return '<div class="hd-card" onclick="openDetail('+p.id+')" style="border-color:'+border+'">'
+      +(od?'<div class="overdue-banner">⚠️ This project is past its target date</div>':'')
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">'
+      +'<div><div style="font-size:14px;font-weight:700;margin-bottom:4px">'+p.name+'</div>'
+      +'<span class="ptag" style="background:'+PCOL[p.product]+'22;color:'+PCOL[p.product]+';border:1px solid '+PCOL[p.product]+'33">'+p.product+'</span></div>'
+      +'<div style="text-align:right"><span class="phase '+PCLS[p.phase]+'">'+p.phase+'</span><br/><span style="display:block;margin-top:4px">'+ragBadge(rag)+'</span></div></div>'
+      +'<div style="margin:10px 0 4px"><div class="prog-bar" style="height:8px;border-radius:4px"><div class="prog-fill" style="width:'+p.progress+'%;background:'+ragColor(rag)+'"></div></div></div>'
+      +'<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:10px">'
+      +'<span style="color:'+ragColor(rag)+';font-weight:700">'+p.progress+'% complete</span>'
+      +'<span>Target: '+(p.target||'TBD')+'</span></div>'
+      +'<div style="font-size:11px;color:var(--text2);margin-bottom:8px">'
+      +'<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px"><div class="av" style="width:20px;height:20px;font-size:8px;background:'+avColor(p.ba)+'">'+initials(p.ba)+'</div> BA: <b style="color:var(--text)">'+p.ba+'</b></div>'
+      +'<div style="display:flex;align-items:center;gap:6px"><div class="av" style="width:20px;height:20px;font-size:8px;background:'+avColor(p.pm)+'">'+initials(p.pm)+'</div> PM: <b style="color:var(--text)">'+p.pm+'</b></div>'
+      +'</div>'
+      +(ll?'<div style="background:var(--surface);border-radius:7px;padding:8px 10px;font-size:11px;color:var(--text2);border-left:2px solid var(--uba-red)"><span style="font-weight:700;color:var(--text)">Latest: </span>'+ll.note+' <span style="float:right">'+ll.date+'</span></div>':'')
+      +'<div class="phase-stepper" style="margin-top:10px">'+stepper+'</div>'
+      +'</div>';
+  }).join('');
+
+  document.getElementById('content').innerHTML=
+    '<div class="stats" style="margin-bottom:18px">'
+    +PHASES.map(function(ph){
+      return '<div class="stat-card '+(byPhase[ph]>0?'red':'gray')+'" style="padding:12px 14px">'
+        +'<div class="s-label">'+ph+'</div>'
+        +'<div class="s-val" style="font-size:22px;color:'+(byPhase[ph]>0?'#f87171':'var(--text2)')+'">'+byPhase[ph]+'</div>'
+        +'</div>';
+    }).join('')
+    +'</div>'
+    +'<div class="filters" style="margin-bottom:18px">'
+    +'<select class="filter-select" onchange="hdProd=this.value;renderHD()"><option value="all"'+(hdProd==='all'?' selected':'')+'>All Products</option>'+prodOpts+'</select>'
+    +'<select class="filter-select" onchange="hdPhase=this.value;renderHD()"><option value="all"'+(hdPhase==='all'?' selected':'')+'>All Phases</option>'+phaseOpts+'</select>'
+    +'<select class="filter-select" onchange="hdRAG=this.value;renderHD()"><option value="all"'+(hdRAG==='all'?' selected':'')+'>All RAG</option><option value="G"'+(hdRAG==='G'?' selected':'')+'>🟢 On Track</option><option value="A"'+(hdRAG==='A'?' selected':'')+'>🟡 At Risk</option><option value="R"'+(hdRAG==='R'?' selected':'')+'>🔴 Off Track</option></select>'
+    +'<button class="btn btn-ghost" onclick="exportPDF()">📄 Export PDF</button>'
+    +'</div>'
+    +'<div class="hd-grid">'+cards+'</div>';
+}
+
+// ── ANALYTICS ──
+var chartInstances = {};
+function renderAnalytics() {
+  document.getElementById('page-title').textContent='Analytics & Insights';
+  document.getElementById('content').innerHTML=
+    '<div class="analytics-grid">'
+    +'<div class="chart-card"><h3>Projects by Product</h3><div class="chart-wrap"><canvas id="chart-prod"></canvas></div></div>'
+    +'<div class="chart-card"><h3>Phase Distribution</h3><div class="chart-wrap"><canvas id="chart-phase"></canvas></div></div>'
+    +'<div class="chart-card"><h3>RAG Status Overview</h3><div class="chart-wrap"><canvas id="chart-rag"></canvas></div></div>'
+    +'<div class="chart-card"><h3>Progress by Product (Avg %)</h3><div class="chart-wrap"><canvas id="chart-prog"></canvas></div></div>'
+    +'</div>';
+
+  // Destroy old instances
+  Object.keys(chartInstances).forEach(function(k){ try{chartInstances[k].destroy();}catch(e){} });
+
+  var prods=Object.keys(PCOL);
+  var prodCounts=prods.map(function(p){return projects.filter(function(x){return x.product===p;}).length;});
+  var prodColors=prods.map(function(p){return PCOL[p];});
+
+  var phaseCounts=PHASES.map(function(ph){return projects.filter(function(p){return p.phase===ph;}).length;});
+  var phaseColors=['#818cf8','#67e8f9','#fde68a','#fdba74','#d8b4fe','#93c5fd','#86efac'];
+
+  var ragCounts=[
+    projects.filter(function(p){return getRAG(p)==='G';}).length,
+    projects.filter(function(p){return getRAG(p)==='A';}).length,
+    projects.filter(function(p){return getRAG(p)==='R';}).length
+  ];
+
+  var prodAvg=prods.map(function(prod){
+    var ps=projects.filter(function(p){return p.product===prod;});
+    return ps.length?Math.round(ps.reduce(function(a,p){return a+p.progress;},0)/ps.length):0;
+  });
+
+  var defaults={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8b949e',font:{size:11}}}}};
+
+  chartInstances['prod']=new Chart(document.getElementById('chart-prod'),{
+    type:'doughnut',
+    data:{labels:prods,datasets:[{data:prodCounts,backgroundColor:prodColors.map(function(c){return c+'cc';}),borderColor:prodColors,borderWidth:1}]},
+    options:Object.assign({},defaults)
+  });
+  chartInstances['phase']=new Chart(document.getElementById('chart-phase'),{
+    type:'bar',
+    data:{labels:PHASES,datasets:[{label:'Projects',data:phaseCounts,backgroundColor:phaseColors.map(function(c){return c+'55';}),borderColor:phaseColors,borderWidth:1,borderRadius:4}]},
+    options:Object.assign({},defaults,{scales:{x:{ticks:{color:'#8b949e',font:{size:10}}},y:{ticks:{color:'#8b949e',stepSize:1}}},plugins:{legend:{display:false}}})
+  });
+  chartInstances['rag']=new Chart(document.getElementById('chart-rag'),{
+    type:'doughnut',
+    data:{labels:['On Track','At Risk','Off Track'],datasets:[{data:ragCounts,backgroundColor:['rgba(22,163,74,.7)','rgba(217,119,6,.7)','rgba(200,16,46,.7)'],borderColor:['#16a34a','#d97706','#C8102E'],borderWidth:1}]},
+    options:Object.assign({},defaults)
+  });
+  chartInstances['prog']=new Chart(document.getElementById('chart-prog'),{
+    type:'bar',
+    data:{labels:prods,datasets:[{label:'Avg Progress %',data:prodAvg,backgroundColor:prodColors.map(function(c){return c+'66';}),borderColor:prodColors,borderWidth:1,borderRadius:4}]},
+    options:Object.assign({},defaults,{scales:{x:{ticks:{color:'#8b949e',font:{size:10}}},y:{min:0,max:100,ticks:{color:'#8b949e'}}},plugins:{legend:{display:false}}})
+  });
+}
+
+// ── DETAIL MODAL ──
+function openDetail(id) {
+  var p=projects.find(function(x){return x.id===id;}); if(!p)return;
+  var pi=PHASES.indexOf(p.phase), logs=p.logs||[], rag=getRAG(p), od=isOverdue(p);
+  var stepper=PHASES.map(function(ph,i){
+    var done=i<pi,cur=i===pi;
+    return (i>0?'<div class="pc '+(done||cur?'done':'')+'"></div>':'')
+      +'<div class="ps '+(done?'done':cur?'current':'')+'"><div class="dot">'+(done?'✓':(i+1))+'</div><div class="sn">'+ph+'</div></div>';
+  }).join('');
+  var logItems=logs.length===0
+    ?'<div style="color:var(--text2);font-size:12px;padding:8px">No updates yet.</div>'
+    :logs.slice().reverse().map(function(l,i){
+        return '<div class="log-item'+(i===0?' log-new':'')+'"><div class="log-meta"><span>'+l.date+'</span></div>'+l.note+'</div>';
+      }).join('');
+  document.getElementById('dm-title').textContent=p.name;
+  document.getElementById('dm-body').innerHTML=
+    (od?'<div style="background:var(--red-soft);border:1px solid rgba(200,16,46,.3);border-radius:8px;padding:10px 14px;font-size:13px;color:#f87171;margin-bottom:4px">⚠️ This project is past its target go-live date</div>':'')
+    +'<div class="detail-grid">'
+    +'<div class="di"><div class="dk">Product</div><div class="dv"><span class="ptag" style="background:'+PCOL[p.product]+'22;color:'+PCOL[p.product]+'">'+p.product+'</span></div></div>'
+    +'<div class="di"><div class="dk">Phase</div><div class="dv"><span class="phase '+PCLS[p.phase]+'">'+p.phase+'</span></div></div>'
+    +'<div class="di"><div class="dk">RAG Status</div><div class="dv">'+ragBadge(rag)+'</div></div>'
+    +'<div class="di"><div class="dk">Progress</div><div class="dv" style="color:'+pc(p.progress)+'">'+p.progress+'%</div></div>'
+    +'<div class="di"><div class="dk">Business Analyst</div><div class="dv" style="display:flex;align-items:center;gap:6px"><div class="av" style="background:'+avColor(p.ba)+';width:22px;height:22px;font-size:9px">'+initials(p.ba)+'</div>'+p.ba+'</div></div>'
+    +'<div class="di"><div class="dk">Product Manager</div><div class="dv" style="display:flex;align-items:center;gap:6px"><div class="av" style="background:'+avColor(p.pm)+';width:22px;height:22px;font-size:9px">'+initials(p.pm)+'</div>'+p.pm+'</div></div>'
+    +'<div class="di"><div class="dk">Start Date</div><div class="dv">'+(p.start||'—')+'</div></div>'
+    +'<div class="di"><div class="dk">Target Go-Live</div><div class="dv" style="color:'+(od?'#f87171':'inherit')+'">'+(p.target||'—')+(od?' ⚠':'')+'</div></div>'
+    +'</div>'
+    +'<div style="margin-bottom:6px;font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;font-weight:600">Phase Journey</div>'
+    +'<div class="phase-stepper">'+stepper+'</div>'
+    +'<div style="margin-bottom:6px;font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-top:4px">Progress</div>'
+    +'<div class="prog-wrap" style="margin-bottom:16px"><div class="prog-bar" style="flex:1;height:10px;border-radius:5px"><div class="prog-fill" style="width:'+p.progress+'%;background:'+pc(p.progress)+'"></div></div><span style="font-size:16px;font-weight:800;color:'+pc(p.progress)+'">'+p.progress+'%</span></div>'
+    +'<div style="margin-bottom:8px;font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;font-weight:600">Update Log ('+logs.length+')</div>'
+    +'<div class="update-log">'+logItems+'</div>';
+  document.getElementById('detail-modal').style.display='flex';
+}
+function closeDetailModal(){ document.getElementById('detail-modal').style.display='none'; }
+
+// ── ADD / EDIT ──
+function openAddModal() {
+  editId=null;
+  document.getElementById('modal-title').textContent='Add New Project';
+  ['f-name','f-ba','f-pm-name','f-update'].forEach(function(i){document.getElementById(i).value='';});
+  document.getElementById('f-progress').value='0';
+  document.getElementById('f-start').value='';
+  document.getElementById('f-target').value='';
+  document.getElementById('modal').style.display='flex';
+}
+function openEditModal(id) {
+  var p=projects.find(function(x){return x.id===id;}); if(!p)return;
+  editId=id;
+  document.getElementById('modal-title').textContent='Edit Project';
+  document.getElementById('f-name').value=p.name;
+  document.getElementById('f-ba').value=p.ba;
+  document.getElementById('f-pm-name').value=p.pm;
+  document.getElementById('f-product').value=p.product;
+  document.getElementById('f-phase').value=p.phase;
+  document.getElementById('f-progress').value=p.progress;
+  document.getElementById('f-start').value=p.start||'';
+  document.getElementById('f-target').value=p.target||'';
+  document.getElementById('f-update').value='';
+  document.getElementById('modal').style.display='flex';
+}
+function closeModal(){ document.getElementById('modal').style.display='none'; }
+
+function saveProject() {
+  var name=document.getElementById('f-name').value.trim();
+  var ba=document.getElementById('f-ba').value.trim();
+  var pm=document.getElementById('f-pm-name').value.trim();
+  if(!name||!ba||!pm){toast('Please fill in Project Name, BA, and PM','error');return;}
+  var note=document.getElementById('f-update').value.trim();
+  if(editId){
+    var p=projects.find(function(x){return x.id===editId;});
+    p.name=name;p.ba=ba;p.pm=pm;
+    p.product=document.getElementById('f-product').value;
+    p.phase=document.getElementById('f-phase').value;
+    p.progress=parseInt(document.getElementById('f-progress').value)||0;
+    p.start=document.getElementById('f-start').value;
+    p.target=document.getElementById('f-target').value;
+    if(note){if(!p.logs)p.logs=[];p.logs.push({date:today(),note:note});}
+  } else {
+    var maxId=projects.reduce(function(m,p){return Math.max(m,p.id);},0);
+    projects.push({id:maxId+1,name:name,ba:ba,pm:pm,
+      product:document.getElementById('f-product').value,
+      phase:document.getElementById('f-phase').value,
+      progress:parseInt(document.getElementById('f-progress').value)||0,
+      start:document.getElementById('f-start').value,
+      target:document.getElementById('f-target').value,
+      logs:note?[{date:today(),note:note}]:[]});
+  }
+  closeModal();
+  if(configured)saveToFirebase();
+  toast(editId?'✅ Project updated!':'✅ Project added!','success');
+  renderContent();
+}
+
+// ── UPDATE ──
+function openUpdateModal(id) {
+  updateId=id;
+  var p=projects.find(function(x){return x.id===id;});
+  document.getElementById('um-title').textContent='Update: '+p.name;
+  document.getElementById('u-phase').value=p.phase;
+  document.getElementById('u-progress').value=p.progress;
+  document.getElementById('u-note').value='';
+  document.getElementById('update-modal').style.display='flex';
+}
+function closeUpdateModal(){ document.getElementById('update-modal').style.display='none'; }
+function submitUpdate() {
+  var note=document.getElementById('u-note').value.trim();
+  if(!note){toast('Please enter an update note','error');return;}
+  var p=projects.find(function(x){return x.id===updateId;});
+  p.phase=document.getElementById('u-phase').value;
+  p.progress=parseInt(document.getElementById('u-progress').value)||p.progress;
+  if(!p.logs)p.logs=[];
+  p.logs.push({date:today(),note:note});
+  closeUpdateModal();
+  if(configured)saveToFirebase();
+  toast('✅ Update posted — visible to all users instantly!','success');
+  renderContent();
+}
+
+// ── PDF EXPORT ──
+function exportPDF() {
+  var doc = new window.jspdf.jsPDF({orientation:'landscape'});
+  var today_str = today();
+  // Header
+  doc.setFillColor(200,16,46);
+  doc.rect(0,0,297,18,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(13);
+  doc.setFont('helvetica','bold');
+  doc.text('UBA Digital Banking — Project Status Report',14,12);
+  doc.setFontSize(9);
+  doc.text('Generated: '+today_str,250,12);
+  // Summary
+  doc.setTextColor(50,50,50);
+  doc.setFontSize(9);
+  doc.setFont('helvetica','normal');
+  var onT=projects.filter(function(p){return getRAG(p)==='G';}).length;
+  var atR=projects.filter(function(p){return getRAG(p)==='A';}).length;
+  var offT=projects.filter(function(p){return getRAG(p)==='R';}).length;
+  doc.text('Total Projects: '+projects.length+'   |   On Track: '+onT+'   |   At Risk: '+atR+'   |   Off Track: '+offT,14,24);
+  // Table
+  var rows=projects.map(function(p){
+    var rag=getRAG(p);
+    return [p.id,p.name,p.product,p.ba,p.pm,p.phase,rag==='G'?'On Track':rag==='A'?'At Risk':'Off Track',p.progress+'%',p.target||'—'];
+  });
+  doc.autoTable({
+    startY:28,
+    head:[['#','Project','Product','Business Analyst','Product Manager','Phase','RAG','Progress','Target']],
+    body:rows,
+    theme:'grid',
+    headStyles:{fillColor:[200,16,46],textColor:255,fontStyle:'bold',fontSize:9},
+    bodyStyles:{fontSize:8,textColor:[30,30,30]},
+    alternateRowStyles:{fillColor:[252,248,248]},
+    columnStyles:{0:{cellWidth:8},7:{cellWidth:16},8:{cellWidth:22}},
+    didParseCell:function(data){
+      if(data.section==='body'&&data.column.index===6){
+        if(data.cell.raw==='On Track') data.cell.styles.textColor=[22,163,74];
+        else if(data.cell.raw==='At Risk') data.cell.styles.textColor=[217,119,6];
+        else data.cell.styles.textColor=[200,16,46];
+      }
+    }
+  });
+  doc.save('UBA-Digital-Projects-'+today_str+'.pdf');
+  toast('📄 PDF exported successfully!','success');
 }
 
 // ── SEED DATA ──
-function seedData() {
+function seedData(){
   return [
     {id:1,name:'Card Tokenization',product:'Cards',ba:'Emeka Okafor',pm:'Ngozi Adeyemi',phase:'UAT',progress:65,start:'2025-02-01',target:'2025-06-30',logs:[{date:'2025-05-20',note:'UAT test cases completed, 3 defects raised'},{date:'2025-04-15',note:'SIT passed with minor issues resolved'}]},
     {id:2,name:'Leo AI Upgrade',product:'Leo',ba:'Chinwe Eze',pm:'Tunde Balogun',phase:'SIT',progress:40,start:'2025-03-01',target:'2025-08-15',logs:[{date:'2025-05-18',note:'Integration testing for NLP module started'}]},
@@ -330,292 +925,14 @@ function seedData() {
   ];
 }
 
-// ── NAV ──
-function renderNav() {
-  var items = role === 'pm'
-    ? [{id:'projects',icon:'📋',label:'All Projects'},{id:'add',icon:'➕',label:'Add Project'}]
-    : [{id:'dashboard',icon:'📊',label:'Dashboard'},{id:'projects',icon:'📋',label:'All Projects'}];
-  document.getElementById('nav').innerHTML = items.map(function(i){
-    return '<div class="nav-item '+(currentPage===i.id?'active':'')+'" onclick="navigate(\''+i.id+'\')">'+i.icon+' '+i.label+'</div>';
-  }).join('');
-}
-
-function navigate(p) {
-  if (p === 'add') { currentPage = 'projects'; renderNav(); openAddModal(); return; }
-  currentPage = p; renderNav(); renderContent();
-}
-
-function setRole(r) {
-  role = r;
-  currentPage = r === 'hd' ? 'dashboard' : 'projects';
-  document.getElementById('btn-pm').className = 'role-btn' + (r==='pm' ? ' active-role' : '');
-  document.getElementById('btn-hd').className = 'role-btn' + (r==='hd' ? ' active-role' : '');
-  document.getElementById('avatar-init').textContent = r==='hd' ? 'HD' : 'PM';
-  document.getElementById('page-sub').textContent = r==='hd' ? 'Head of Digital Banking' : 'Product Manager View';
-  renderNav(); renderContent();
-}
-
-function renderContent() {
-  if (currentPage === 'dashboard' && role === 'hd') { renderHD(); return; }
-  renderTable();
-}
-
-// ── TABLE VIEW ──
-function renderTable() {
-  document.getElementById('page-title').textContent = 'All Projects';
-
-  var f = projects.filter(function(p) {
-    if (fProd !== 'all' && p.product !== fProd) return false;
-    if (fPhase !== 'all' && p.phase !== fPhase) return false;
-    if (fSearch && p.name.toLowerCase().indexOf(fSearch.toLowerCase()) === -1
-                && p.ba.toLowerCase().indexOf(fSearch.toLowerCase()) === -1) return false;
-    return true;
-  });
-
-  var live = projects.filter(function(p){ return p.phase === 'Live'; }).length;
-  var total = projects.length || 1;
-  var avg = Math.round(projects.reduce(function(a,p){ return a+p.progress; }, 0) / total);
-
-  var prodOptions = Object.keys(PCOL).map(function(p){
-    return '<option value="'+p+'"'+(fProd===p?' selected':'')+'>'+p+'</option>';
-  }).join('');
-  var phaseOptions = PHASES.map(function(ph){
-    return '<option value="'+ph+'"'+(fPhase===ph?' selected':'')+'>'+ph+'</option>';
-  }).join('');
-
-  var rows = f.length === 0
-    ? '<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--muted)">No projects match the selected filters</td></tr>'
-    : f.map(function(p){
-        var btns = role === 'pm'
-          ? '<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openUpdateModal('+p.id+')">Update</button> <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openEditModal('+p.id+')">Edit</button>'
-          : '—';
-        return '<tr onclick="openDetail('+p.id+')">'
-          + '<td style="color:var(--muted)">'+p.id+'</td>'
-          + '<td style="font-weight:600">'+p.name+'</td>'
-          + '<td><span class="product-tag" style="background:'+PCOL[p.product]+'22;color:'+PCOL[p.product]+';border:1px solid '+PCOL[p.product]+'44">'+p.product+'</span></td>'
-          + '<td>'+p.ba+'</td>'
-          + '<td>'+p.pm+'</td>'
-          + '<td><span class="phase '+PCLS[p.phase]+'">'+p.phase+'</span></td>'
-          + '<td><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:'+p.progress+'%;background:'+pc(p.progress)+'"></div></div><span class="prog-label">'+p.progress+'%</span></div></td>'
-          + '<td style="color:var(--muted);font-size:12px">'+(p.target||'—')+'</td>'
-          + '<td>'+btns+'</td>'
-          + '</tr>';
-      }).join('');
-
-  document.getElementById('content').innerHTML =
-    '<div class="stats">'
-    + '<div class="stat-card"><div class="label">Total Projects</div><div class="value" style="color:var(--accent)">'+projects.length+'</div><div class="sub">All products</div></div>'
-    + '<div class="stat-card"><div class="label">In Progress</div><div class="value" style="color:var(--yellow)">'+(projects.length-live)+'</div><div class="sub">Active phases</div></div>'
-    + '<div class="stat-card"><div class="label">Live</div><div class="value" style="color:var(--green)">'+live+'</div><div class="sub">Deployed</div></div>'
-    + '<div class="stat-card"><div class="label">Avg Progress</div><div class="value" style="color:'+pc(avg)+'">'+avg+'%</div><div class="sub">Overall</div></div>'
-    + '</div>'
-    + '<div class="filters">'
-    + '<input class="filter-input" placeholder="🔍  Search project or BA…" value="'+fSearch+'" oninput="fSearch=this.value;renderTable()"/>'
-    + '<select class="filter-select" onchange="fProd=this.value;renderTable()">'
-    + '<option value="all"'+(fProd==='all'?' selected':'')+'>All Products</option>'+prodOptions
-    + '</select>'
-    + '<select class="filter-select" onchange="fPhase=this.value;renderTable()">'
-    + '<option value="all"'+(fPhase==='all'?' selected':'')+'>All Phases</option>'+phaseOptions
-    + '</select>'
-    + (role==='pm' ? '<button class="btn btn-primary" onclick="openAddModal()">+ New Project</button>' : '')
-    + '</div>'
-    + '<div class="table-wrap"><table>'
-    + '<thead><tr><th>#</th><th>Project Name</th><th>Product</th><th>Business Analyst</th><th>Product Manager</th><th>Phase</th><th>Progress</th><th>Target</th><th>Actions</th></tr></thead>'
-    + '<tbody>'+rows+'</tbody>'
-    + '</table></div>';
-}
-
-// ── HEAD OF DIGITAL DASHBOARD ──
-function renderHD() {
-  document.getElementById('page-title').textContent = 'Head of Digital – Live Dashboard';
-
-  var byPhase = {};
-  PHASES.forEach(function(ph){ byPhase[ph] = projects.filter(function(p){ return p.phase===ph; }).length; });
-
-  var f = projects.filter(function(p) {
-    if (hdProd !== 'all' && p.product !== hdProd) return false;
-    if (hdPhase !== 'all' && p.phase !== hdPhase) return false;
-    return true;
-  });
-
-  var prodOptions = Object.keys(PCOL).map(function(p){
-    return '<option value="'+p+'"'+(hdProd===p?' selected':'')+'>'+p+'</option>';
-  }).join('');
-  var phaseOptions = PHASES.map(function(ph){
-    return '<option value="'+ph+'"'+(hdPhase===ph?' selected':'')+'>'+ph+'</option>';
-  }).join('');
-
-  var phaseCounts = PHASES.map(function(ph){
-    return '<div class="stat-card" style="border-color:'+(byPhase[ph]>0?'var(--accent)':'var(--border)')+'"><div class="label">'+ph+'</div><div class="value" style="font-size:22px;color:'+(byPhase[ph]>0?'var(--accent)':'var(--muted)')+'">'+byPhase[ph]+'</div><div class="sub">project'+(byPhase[ph]!==1?'s':'')+'</div></div>';
-  }).join('');
-
-  var cards = f.map(function(p) {
-    var pi = PHASES.indexOf(p.phase);
-    var logs = p.logs || [];
-    var ll = logs.length ? logs[logs.length-1] : null;
-    var latestNote = ll ? '<div style="margin-top:10px;background:var(--surface);border-radius:7px;padding:9px 11px;font-size:11px;color:var(--muted)"><span style="font-weight:600;color:var(--accent)">Latest:</span> '+ll.note+' <span style="float:right">'+ll.date+'</span></div>' : '';
-    var stepper = PHASES.map(function(ph, i){
-      var done = i < pi, cur = i === pi;
-      var connector = i > 0 ? '<div class="phase-connector '+(done||cur?'done':'')+'"></div>' : '';
-      return connector + '<div class="phase-step '+(done?'done':cur?'current':'')+'"><div class="dot">'+(done?'✓':(i+1))+'</div><div class="sname">'+ph+'</div></div>';
-    }).join('');
-    var borderColor = p.phase==='Live' ? 'rgba(34,197,94,.3)' : p.progress>=75 ? 'rgba(59,130,246,.3)' : 'var(--border)';
-    return '<div class="hd-card" onclick="openDetail('+p.id+')" style="border-color:'+borderColor+'">'
-      + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">'
-      + '<div><div style="font-size:14px;font-weight:700">'+p.name+'</div>'
-      + '<div style="margin-top:3px"><span class="product-tag" style="background:'+PCOL[p.product]+'22;color:'+PCOL[p.product]+';border:1px solid '+PCOL[p.product]+'44">'+p.product+'</span></div></div>'
-      + '<span class="phase '+PCLS[p.phase]+'">'+p.phase+'</span></div>'
-      + '<div class="hd-big-prog"><div class="prog-bar"><div class="prog-fill" style="width:'+p.progress+'%;background:'+pc(p.progress)+'"></div></div></div>'
-      + '<div class="hd-meta"><span style="color:'+pc(p.progress)+';font-weight:700">'+p.progress+'% complete</span><span>Target: '+(p.target||'TBD')+'</span></div>'
-      + '<div style="margin-top:10px;font-size:11px;color:var(--muted)">BA: <b style="color:var(--text)">'+p.ba+'</b> &nbsp;|&nbsp; PM: <b style="color:var(--text)">'+p.pm+'</b></div>'
-      + latestNote
-      + '<div class="phase-stepper" style="margin-top:12px">'+stepper+'</div>'
-      + '</div>';
-  }).join('');
-
-  document.getElementById('content').innerHTML =
-    '<div class="stats" style="margin-bottom:20px">'+phaseCounts+'</div>'
-    + '<div class="filters" style="margin-bottom:20px">'
-    + '<select class="filter-select" onchange="hdProd=this.value;renderHD()"><option value="all"'+(hdProd==='all'?' selected':'')+'>All Products</option>'+prodOptions+'</select>'
-    + '<select class="filter-select" onchange="hdPhase=this.value;renderHD()"><option value="all"'+(hdPhase==='all'?' selected':'')+'>All Phases</option>'+phaseOptions+'</select>'
-    + '</div>'
-    + '<div class="hd-grid">'+cards+'</div>';
-}
-
-// ── DETAIL MODAL ──
-function openDetail(id) {
-  var p = projects.find(function(x){ return x.id===id; });
-  if (!p) return;
-  var pi = PHASES.indexOf(p.phase);
-  var logs = p.logs || [];
-  var stepper = PHASES.map(function(ph,i){
-    var done=i<pi, cur=i===pi;
-    return (i>0?'<div class="phase-connector '+(done||cur?'done':'')+'"></div>':'')
-      +'<div class="phase-step '+(done?'done':cur?'current':'')+'"><div class="dot">'+(done?'✓':(i+1))+'</div><div class="sname">'+ph+'</div></div>';
-  }).join('');
-  var logItems = logs.length === 0
-    ? '<div style="color:var(--muted);font-size:12px;padding:8px">No updates yet.</div>'
-    : logs.slice().reverse().map(function(l){ return '<div class="log-item"><div class="log-meta">'+l.date+'</div>'+l.note+'</div>'; }).join('');
-  document.getElementById('dm-title').textContent = p.name;
-  document.getElementById('dm-body').innerHTML =
-    '<div class="detail-grid">'
-    +'<div class="detail-item"><div class="dk">Product</div><div class="dv"><span class="product-tag" style="background:'+PCOL[p.product]+'22;color:'+PCOL[p.product]+'">'+p.product+'</span></div></div>'
-    +'<div class="detail-item"><div class="dk">Phase</div><div class="dv"><span class="phase '+PCLS[p.phase]+'">'+p.phase+'</span></div></div>'
-    +'<div class="detail-item"><div class="dk">Business Analyst</div><div class="dv">'+p.ba+'</div></div>'
-    +'<div class="detail-item"><div class="dk">Product Manager</div><div class="dv">'+p.pm+'</div></div>'
-    +'<div class="detail-item"><div class="dk">Start Date</div><div class="dv">'+(p.start||'—')+'</div></div>'
-    +'<div class="detail-item"><div class="dk">Target Go-Live</div><div class="dv">'+(p.target||'—')+'</div></div>'
-    +'</div>'
-    +'<div style="margin-bottom:6px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Overall Progress</div>'
-    +'<div class="prog-wrap" style="margin-bottom:16px"><div class="prog-bar" style="flex:1"><div class="prog-fill" style="width:'+p.progress+'%;background:'+pc(p.progress)+'"></div></div><span style="font-size:15px;font-weight:700;color:'+pc(p.progress)+'">'+p.progress+'%</span></div>'
-    +'<div style="margin-bottom:6px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Phase Journey</div>'
-    +'<div class="phase-stepper">'+stepper+'</div>'
-    +'<div style="margin:16px 0 8px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Update Log ('+logs.length+')</div>'
-    +'<div class="update-log">'+logItems+'</div>';
-  document.getElementById('detail-modal').style.display = 'flex';
-}
-function closeDetailModal(){ document.getElementById('detail-modal').style.display='none'; }
-
-// ── ADD / EDIT MODAL ──
-function openAddModal() {
-  editId = null;
-  document.getElementById('modal-title').textContent = 'Add New Project';
-  ['f-name','f-ba','f-pm-name','f-update'].forEach(function(i){ document.getElementById(i).value=''; });
-  document.getElementById('f-progress').value = '0';
-  document.getElementById('f-start').value = '';
-  document.getElementById('f-target').value = '';
-  document.getElementById('modal').style.display = 'flex';
-}
-function openEditModal(id) {
-  var p = projects.find(function(x){ return x.id===id; });
-  if (!p) return;
-  editId = id;
-  document.getElementById('modal-title').textContent = 'Edit Project';
-  document.getElementById('f-name').value = p.name;
-  document.getElementById('f-ba').value = p.ba;
-  document.getElementById('f-pm-name').value = p.pm;
-  document.getElementById('f-product').value = p.product;
-  document.getElementById('f-phase').value = p.phase;
-  document.getElementById('f-progress').value = p.progress;
-  document.getElementById('f-start').value = p.start||'';
-  document.getElementById('f-target').value = p.target||'';
-  document.getElementById('f-update').value = '';
-  document.getElementById('modal').style.display = 'flex';
-}
-function closeModal(){ document.getElementById('modal').style.display='none'; }
-
-function saveProject() {
-  var name = document.getElementById('f-name').value.trim();
-  var ba   = document.getElementById('f-ba').value.trim();
-  var pm   = document.getElementById('f-pm-name').value.trim();
-  if (!name||!ba||!pm){ toast('Please fill in Project Name, BA, and PM','error'); return; }
-  var note = document.getElementById('f-update').value.trim();
-  if (editId) {
-    var p = projects.find(function(x){ return x.id===editId; });
-    p.name=name; p.ba=ba; p.pm=pm;
-    p.product  = document.getElementById('f-product').value;
-    p.phase    = document.getElementById('f-phase').value;
-    p.progress = parseInt(document.getElementById('f-progress').value)||0;
-    p.start    = document.getElementById('f-start').value;
-    p.target   = document.getElementById('f-target').value;
-    if (note){ if(!p.logs)p.logs=[]; p.logs.push({date:today(),note:note}); }
-  } else {
-    var maxId = projects.reduce(function(m,p){ return Math.max(m,p.id); }, 0);
-    projects.push({
-      id: maxId+1, name:name, ba:ba, pm:pm,
-      product:  document.getElementById('f-product').value,
-      phase:    document.getElementById('f-phase').value,
-      progress: parseInt(document.getElementById('f-progress').value)||0,
-      start:    document.getElementById('f-start').value,
-      target:   document.getElementById('f-target').value,
-      logs:     note ? [{date:today(),note:note}] : []
-    });
-  }
-  closeModal();
-  if (configured) { saveToFirebase(); }
-  toast(editId ? '✅ Project updated!' : '✅ Project added!', 'success');
-  renderContent();
-}
-
-// ── UPDATE MODAL ──
-function openUpdateModal(id) {
-  updateId = id;
-  var p = projects.find(function(x){ return x.id===id; });
-  document.getElementById('um-title').textContent = 'Update: ' + p.name;
-  document.getElementById('u-phase').value = p.phase;
-  document.getElementById('u-progress').value = p.progress;
-  document.getElementById('u-note').value = '';
-  document.getElementById('update-modal').style.display = 'flex';
-}
-function closeUpdateModal(){ document.getElementById('update-modal').style.display='none'; }
-
-function submitUpdate() {
-  var note = document.getElementById('u-note').value.trim();
-  if (!note){ toast('Please enter an update note','error'); return; }
-  var p = projects.find(function(x){ return x.id===updateId; });
-  p.phase    = document.getElementById('u-phase').value;
-  p.progress = parseInt(document.getElementById('u-progress').value)||p.progress;
-  if (!p.logs) p.logs = [];
-  p.logs.push({date:today(), note:note});
-  closeUpdateModal();
-  if (configured) { saveToFirebase(); }
-  toast('✅ Update posted — visible to all users instantly!', 'success');
-  renderContent();
-}
-
 function today(){ return new Date().toISOString().slice(0,10); }
-
-function toast(msg, type) {
-  type = type || 'success';
-  var t = document.createElement('div');
-  t.className = 'toast toast-' + type;
-  t.textContent = msg;
+function toast(msg,type){
+  type=type||'success';
+  var t=document.createElement('div');
+  t.className='toast ts-'+type; t.textContent=msg;
   document.body.appendChild(t);
-  setTimeout(function(){ t.remove(); }, 3500);
+  setTimeout(function(){t.remove();},3500);
 }
-
-// ── START ──
-window.onload = function(){ initApp(); };
 </script>
 </body>
 </html>
