@@ -4,36 +4,19 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>DigitalOps – Project Tracker</title>
-
-<!-- ════════════════════════════════════════════════════
-     FIREBASE SETUP  ← YOU ONLY NEED TO CHANGE THIS BLOCK
-     Step-by-step instructions at the bottom of this file
-     ════════════════════════════════════════════════════ -->
-<script>
-  const FIREBASE_CONFIG = {
-    apiKey: "AIzaSyDB1Upcp3QmFYOKYR9PTK36iNviNiJtUFc",
-  authDomain: "digipulse-c2ae2.firebaseapp.com",
-  databaseURL: "https://digipulse-c2ae2-default-rtdb.firebaseio.com",
-  projectId: "digipulse-c2ae2",
-  storageBucket: "digipulse-c2ae2.firebasestorage.app",
-  messagingSenderId: "798551482503",
-  appId: "1:798551482503:web:4e66c4e57149264a105822"
-  };
-</script>
-
 <style>
-:root{--bg:#0b1120;--surface:#131d30;--card:#1a2540;--border:#263352;--accent:#3b82f6;--accent2:#6366f1;--green:#22c55e;--yellow:#eab308;--orange:#f97316;--red:#ef4444;--purple:#a855f7;--cyan:#06b6d4;--text:#e2e8f0;--muted:#8899bb;--radius:10px}
+:root{--bg:#0b1120;--surface:#131d30;--card:#1a2540;--border:#263352;--accent:#3b82f6;--accent2:#6366f1;--green:#22c55e;--yellow:#eab308;--red:#ef4444;--text:#e2e8f0;--muted:#8899bb;--radius:10px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif;min-height:100vh}
 .app{display:flex;height:100vh;overflow:hidden}
 .sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
 .main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
-.logo{padding:22px 18px 14px}.logo h2{font-size:15px;font-weight:700;color:var(--accent);letter-spacing:.5px}.logo p{font-size:11px;color:var(--muted);margin-top:2px}
+.logo{padding:22px 18px 14px}.logo h2{font-size:15px;font-weight:700;color:var(--accent)}.logo p{font-size:11px;color:var(--muted);margin-top:2px}
 .nav{padding:8px 10px;flex:1}
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s;margin-bottom:2px}
 .nav-item:hover{background:var(--card);color:var(--text)}.nav-item.active{background:var(--accent);color:#fff}
 .role-switch{padding:14px 12px;border-top:1px solid var(--border)}
-.role-btn{display:block;width:100%;padding:9px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;text-align:center;transition:all .2s}
+.role-btn{display:block;width:100%;padding:9px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;text-align:center;transition:all .2s;margin-bottom:6px}
 .role-btn.active-role{border-color:var(--accent);color:var(--accent);background:rgba(59,130,246,.1)}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
 .topbar h1{font-size:18px;font-weight:700}
@@ -116,12 +99,30 @@ td{padding:13px 16px;font-size:13px;vertical-align:middle}
 .loading-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:300;gap:16px}
 .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.setup-banner{background:#1e1a05;border:1px solid var(--yellow);border-radius:10px;padding:16px 20px;margin-bottom:20px;font-size:13px;line-height:1.7}
-.setup-banner b{color:var(--yellow)}
 ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 </style>
 </head>
 <body>
+
+<!-- ══════════════════════════════════════════════════════
+  PASTE YOUR FIREBASE CONFIG HERE (from Firebase Console)
+  Project Settings → Your Apps → SDK Setup → Config
+════════════════════════════════════════════════════════ -->
+<script>
+var FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDB1Upcp3QmFYOKYR9PTK36iNviNiJtUFc",
+  authDomain: "digipulse-c2ae2.firebaseapp.com",
+  databaseURL: "https://digipulse-c2ae2-default-rtdb.firebaseio.com",
+  projectId: "digipulse-c2ae2",
+  storageBucket: "digipulse-c2ae2.firebasestorage.app",
+  messagingSenderId: "798551482503",
+  appId: "1:798551482503:web:4e66c4e57149264a105822"
+};
+</script>
+
+<!-- Firebase SDKs (loaded as regular scripts — no module scope issues) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <div class="loading-screen" id="loading-screen">
   <div style="font-size:32px">⚡</div>
@@ -136,7 +137,7 @@ td{padding:13px 16px;font-size:13px;vertical-align:middle}
     <div class="role-switch">
       <div style="font-size:11px;color:var(--muted);margin-bottom:8px;text-align:center">SWITCH VIEW</div>
       <button class="role-btn active-role" id="btn-pm" onclick="setRole('pm')">📋 Product Manager</button>
-      <button class="role-btn" id="btn-hd" onclick="setRole('hd')" style="margin-top:6px">👁️ Head of Digital</button>
+      <button class="role-btn" id="btn-hd" onclick="setRole('hd')">👁️ Head of Digital</button>
     </div>
   </div>
   <div class="main">
@@ -163,7 +164,10 @@ td{padding:13px 16px;font-size:13px;vertical-align:middle}
       <div class="row2">
         <div class="field"><label>Project Name</label><input id="f-name" placeholder="e.g. Card Tokenization"/></div>
         <div class="field"><label>Product / Team</label>
-          <select id="f-product"><option>Mobile App</option><option>Internet Banking</option><option>Leo</option><option>POS</option><option>Web Team</option><option>Cards</option><option>USSD</option></select>
+          <select id="f-product">
+            <option>Mobile App</option><option>Internet Banking</option><option>Leo</option>
+            <option>POS</option><option>Web Team</option><option>Cards</option><option>USSD</option>
+          </select>
         </div>
       </div>
       <div class="row2">
@@ -172,7 +176,10 @@ td{padding:13px 16px;font-size:13px;vertical-align:middle}
       </div>
       <div class="row2">
         <div class="field"><label>Current Phase</label>
-          <select id="f-phase"><option>Development</option><option>SIT</option><option>UAT</option><option>PENTEST</option><option>CCB</option><option>Pilot</option><option>Live</option></select>
+          <select id="f-phase">
+            <option>Development</option><option>SIT</option><option>UAT</option>
+            <option>PENTEST</option><option>CCB</option><option>Pilot</option><option>Live</option>
+          </select>
         </div>
         <div class="field"><label>Progress (%)</label><input id="f-progress" type="number" min="0" max="100" placeholder="0–100"/></div>
       </div>
@@ -195,7 +202,10 @@ td{padding:13px 16px;font-size:13px;vertical-align:middle}
     <div class="modal-head"><h3 id="um-title">Post Update</h3><button class="close-btn" onclick="closeUpdateModal()">✕</button></div>
     <div class="modal-body">
       <div class="field"><label>Current Phase</label>
-        <select id="u-phase"><option>Development</option><option>SIT</option><option>UAT</option><option>PENTEST</option><option>CCB</option><option>Pilot</option><option>Live</option></select>
+        <select id="u-phase">
+          <option>Development</option><option>SIT</option><option>UAT</option>
+          <option>PENTEST</option><option>CCB</option><option>Pilot</option><option>Live</option>
+        </select>
       </div>
       <div class="field"><label>Progress (%)</label><input id="u-progress" type="number" min="0" max="100"/></div>
       <div class="field"><label>Update Note *</label><textarea id="u-note" placeholder="Describe what has changed…"></textarea></div>
@@ -215,87 +225,99 @@ td{padding:13px 16px;font-size:13px;vertical-align:middle}
   </div>
 </div>
 
-<!-- Firebase SDKs -->
-<script type="module">
-import { initializeApp }                          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, onValue, get }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+<script>
+// ═══════════════════════════════════════════════════════
+// ALL JAVASCRIPT — regular script tag, fully global scope
+// No module imports = no scope issues = filters work 100%
+// ═══════════════════════════════════════════════════════
 
-// ── CHECK CONFIG ──
-const configured = FIREBASE_CONFIG.apiKey !== "PASTE_YOUR_apiKey_HERE";
+var PHASES = ['Development','SIT','UAT','PENTEST','CCB','Pilot','Live'];
+var PCLS = {Development:'phase-dev',SIT:'phase-sit',UAT:'phase-uat',PENTEST:'phase-pentest',CCB:'phase-ccb',Pilot:'phase-pilot',Live:'phase-live'};
+var PCOL = {'Mobile App':'#3b82f6','Internet Banking':'#6366f1','Leo':'#a855f7','POS':'#06b6d4','Web Team':'#22c55e','Cards':'#f97316','USSD':'#eab308'};
+var DB_PATH = 'digitalops/projects';
 
-const PHASES=['Development','SIT','UAT','PENTEST','CCB','Pilot','Live'];
-const PCLS={Development:'phase-dev',SIT:'phase-sit',UAT:'phase-uat',PENTEST:'phase-pentest',CCB:'phase-ccb',Pilot:'phase-pilot',Live:'phase-live'};
-const PCOL={'Mobile App':'#3b82f6','Internet Banking':'#6366f1','Leo':'#a855f7','POS':'#06b6d4','Web Team':'#22c55e','Cards':'#f97316','USSD':'#eab308'};
-const DB_PATH = 'digitalops/projects';
+function pc(p){ return p>=80?'#22c55e':p>=50?'#3b82f6':p>=25?'#eab308':'#ef4444'; }
 
-const pc=p=>p>=80?'#22c55e':p>=50?'#3b82f6':p>=25?'#eab308':'#ef4444';
+var db = null;
+var role = 'pm';
+var currentPage = 'projects';
+var updateId = null;
+var editId = null;
+var projects = [];
+var fProd = 'all';
+var fPhase = 'all';
+var fSearch = '';
+var hdProd = 'all';
+var hdPhase = 'all';
+var configured = false;
 
-let db=null, role='pm', currentPage='projects', updateId=null, editId=null;
-let projects=[], fProd='all', fPhase='all', fSearch='', hdProd='all', hdPhase='all';
+// ── FIREBASE INIT ──
+function initApp() {
+  configured = FIREBASE_CONFIG.apiKey !== "PASTE_YOUR_apiKey_HERE";
 
-// ── INIT FIREBASE ──
-function initFirebase(){
-  try{
-    const app = initializeApp(FIREBASE_CONFIG);
-    db = getDatabase(app);
-    return true;
-  }catch(e){ return false; }
+  if (configured) {
+    try {
+      firebase.initializeApp(FIREBASE_CONFIG);
+      db = firebase.database();
+      startListening();
+    } catch(e) {
+      document.getElementById('loading-msg').textContent = '❌ Firebase error: ' + e.message;
+    }
+  } else {
+    // Demo mode — works locally without Firebase
+    projects = seedData();
+    hideLoading();
+    renderNav();
+    renderContent();
+  }
 }
 
 // ── REAL-TIME LISTENER ──
-function listenToProjects(){
-  const dbRef = ref(db, DB_PATH);
-  onValue(dbRef, snapshot => {
-    const data = snapshot.val();
-    if(data){
-      projects = Object.values(data).sort((a,b)=>a.id-b.id);
+// This is the magic: onValue fires instantly on ANY device when data changes
+function startListening() {
+  db.ref(DB_PATH).on('value', function(snapshot) {
+    var data = snapshot.val();
+    if (data) {
+      projects = Object.values(data).sort(function(a,b){ return a.id - b.id; });
     } else {
-      // First time — seed default data
       projects = seedData();
-      pushToFirebase();
+      saveToFirebase();
     }
     document.getElementById('sync-label').textContent = 'Live ✓';
     document.getElementById('sync-dot').className = 'sync-dot';
     hideLoading();
     renderContent();
-  }, err => {
+  }, function(err) {
+    document.getElementById('loading-msg').textContent = '❌ Firebase failed. Check your databaseURL in the config.';
     console.error(err);
-    document.getElementById('sync-label').textContent = 'Error';
-    document.getElementById('loading-msg').textContent = '❌ Firebase connection failed. Check your config.';
   });
 }
 
-async function pushToFirebase(){
-  if(!db) return false;
+function saveToFirebase() {
+  if (!db) return;
   setSyncing(true);
-  try{
-    const obj={};
-    projects.forEach(p=>{ obj[p.id]=p; });
-    await set(ref(db, DB_PATH), obj);
-    setSyncing(false);
-    return true;
-  }catch(e){
-    setSyncing(false);
-    toast('Firebase write failed: '+e.message,'error');
-    return false;
-  }
+  var obj = {};
+  projects.forEach(function(p){ obj[p.id] = p; });
+  db.ref(DB_PATH).set(obj)
+    .then(function(){ setSyncing(false); })
+    .catch(function(e){ setSyncing(false); toast('Save error: ' + e.message, 'error'); });
 }
 
-function setSyncing(on){
-  const d=document.getElementById('sync-dot');
-  const l=document.getElementById('sync-label');
-  if(!d)return;
-  d.className='sync-dot'+(on?' syncing':'');
-  l.textContent=on?'Saving…':'Live ✓';
+function setSyncing(on) {
+  var d = document.getElementById('sync-dot');
+  var l = document.getElementById('sync-label');
+  if (!d) return;
+  d.className = 'sync-dot' + (on ? ' syncing' : '');
+  l.textContent = on ? 'Saving…' : 'Live ✓';
 }
 
-function hideLoading(){
-  document.getElementById('loading-screen').style.display='none';
-  document.getElementById('app').style.display='flex';
+function hideLoading() {
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
 }
 
 // ── SEED DATA ──
-function seedData(){
+function seedData() {
   return [
     {id:1,name:'Card Tokenization',product:'Cards',ba:'Emeka Okafor',pm:'Ngozi Adeyemi',phase:'UAT',progress:65,start:'2025-02-01',target:'2025-06-30',logs:[{date:'2025-05-20',note:'UAT test cases completed, 3 defects raised'},{date:'2025-04-15',note:'SIT passed with minor issues resolved'}]},
     {id:2,name:'Leo AI Upgrade',product:'Leo',ba:'Chinwe Eze',pm:'Tunde Balogun',phase:'SIT',progress:40,start:'2025-03-01',target:'2025-08-15',logs:[{date:'2025-05-18',note:'Integration testing for NLP module started'}]},
@@ -309,281 +331,291 @@ function seedData(){
 }
 
 // ── NAV ──
-function renderNav(){
-  const items=role==='pm'
-    ?[{id:'projects',icon:'📋',label:'All Projects'},{id:'add',icon:'➕',label:'Add Project'}]
-    :[{id:'dashboard',icon:'📊',label:'Dashboard'},{id:'projects',icon:'📋',label:'All Projects'}];
-  document.getElementById('nav').innerHTML=items.map(i=>
-    `<div class="nav-item ${currentPage===i.id?'active':''}" onclick="window._nav('${i.id}')">${i.icon} ${i.label}</div>`
-  ).join('');
+function renderNav() {
+  var items = role === 'pm'
+    ? [{id:'projects',icon:'📋',label:'All Projects'},{id:'add',icon:'➕',label:'Add Project'}]
+    : [{id:'dashboard',icon:'📊',label:'Dashboard'},{id:'projects',icon:'📋',label:'All Projects'}];
+  document.getElementById('nav').innerHTML = items.map(function(i){
+    return '<div class="nav-item '+(currentPage===i.id?'active':'')+'" onclick="navigate(\''+i.id+'\')">'+i.icon+' '+i.label+'</div>';
+  }).join('');
 }
 
-window._nav=function(p){
-  if(p==='add'){currentPage='projects';renderNav();openAddModal();return;}
-  currentPage=p;renderNav();renderContent();
-};
+function navigate(p) {
+  if (p === 'add') { currentPage = 'projects'; renderNav(); openAddModal(); return; }
+  currentPage = p; renderNav(); renderContent();
+}
 
-window.setRole=function(r){
-  role=r;currentPage=r==='hd'?'dashboard':'projects';
-  document.getElementById('btn-pm').className='role-btn'+(r==='pm'?' active-role':'');
-  document.getElementById('btn-hd').className='role-btn'+(r==='hd'?' active-role':'');
-  document.getElementById('avatar-init').textContent=r==='hd'?'HD':'PM';
-  document.getElementById('page-sub').textContent=r==='hd'?'Head of Digital Banking':'Product Manager View';
-  renderNav();renderContent();
-};
+function setRole(r) {
+  role = r;
+  currentPage = r === 'hd' ? 'dashboard' : 'projects';
+  document.getElementById('btn-pm').className = 'role-btn' + (r==='pm' ? ' active-role' : '');
+  document.getElementById('btn-hd').className = 'role-btn' + (r==='hd' ? ' active-role' : '');
+  document.getElementById('avatar-init').textContent = r==='hd' ? 'HD' : 'PM';
+  document.getElementById('page-sub').textContent = r==='hd' ? 'Head of Digital Banking' : 'Product Manager View';
+  renderNav(); renderContent();
+}
 
-function renderContent(){
-  if(currentPage==='dashboard'&&role==='hd'){renderHD();return;}
+function renderContent() {
+  if (currentPage === 'dashboard' && role === 'hd') { renderHD(); return; }
   renderTable();
 }
 
-// ── TABLE ──
-function renderTable(){
-  document.getElementById('page-title').textContent='All Projects';
-  const f=projects.filter(p=>{
-    if(fProd!=='all'&&p.product!==fProd)return false;
-    if(fPhase!=='all'&&p.phase!==fPhase)return false;
-    if(fSearch&&!p.name.toLowerCase().includes(fSearch.toLowerCase())&&!p.ba.toLowerCase().includes(fSearch.toLowerCase()))return false;
+// ── TABLE VIEW ──
+function renderTable() {
+  document.getElementById('page-title').textContent = 'All Projects';
+
+  var f = projects.filter(function(p) {
+    if (fProd !== 'all' && p.product !== fProd) return false;
+    if (fPhase !== 'all' && p.phase !== fPhase) return false;
+    if (fSearch && p.name.toLowerCase().indexOf(fSearch.toLowerCase()) === -1
+                && p.ba.toLowerCase().indexOf(fSearch.toLowerCase()) === -1) return false;
     return true;
   });
-  const live=projects.filter(p=>p.phase==='Live').length;
-  const avg=Math.round(projects.reduce((a,p)=>a+p.progress,0)/(projects.length||1));
-  document.getElementById('content').innerHTML=`
-    ${!configured?`<div class="setup-banner">⚠️ <b>Firebase not configured yet.</b> This is running in demo mode (data won't sync across devices). Follow the setup guide below the app to connect Firebase for real-time sync.</div>`:''}
-    <div class="stats">
-      <div class="stat-card"><div class="label">Total Projects</div><div class="value" style="color:var(--accent)">${projects.length}</div><div class="sub">All products</div></div>
-      <div class="stat-card"><div class="label">In Progress</div><div class="value" style="color:var(--yellow)">${projects.length-live}</div><div class="sub">Active phases</div></div>
-      <div class="stat-card"><div class="label">Live</div><div class="value" style="color:var(--green)">${live}</div><div class="sub">Deployed</div></div>
-      <div class="stat-card"><div class="label">Avg Progress</div><div class="value" style="color:${pc(avg)}">${avg}%</div><div class="sub">Overall</div></div>
-    </div>
-    <div class="filters">
-      <input class="filter-input" placeholder="🔍  Search project or BA…" value="${fSearch}" oninput="fSearch=this.value;renderTable()"/>
-      <select class="filter-select" onchange="fProd=this.value;renderTable()">
-        <option value="all">All Products</option>
-        ${Object.keys(PCOL).map(p=>`<option value="${p}" ${fProd===p?'selected':''}>${p}</option>`).join('')}
-      </select>
-      <select class="filter-select" onchange="fPhase=this.value;renderTable()">
-        <option value="all">All Phases</option>
-        ${PHASES.map(ph=>`<option value="${ph}" ${fPhase===ph?'selected':''}>${ph}</option>`).join('')}
-      </select>
-      ${role==='pm'?`<button class="btn btn-primary" onclick="openAddModal()">+ New Project</button>`:''}
-    </div>
-    <div class="table-wrap"><table>
-      <thead><tr><th>#</th><th>Project Name</th><th>Product</th><th>Business Analyst</th><th>Product Manager</th><th>Phase</th><th>Progress</th><th>Target</th><th>Actions</th></tr></thead>
-      <tbody>${f.length===0
-        ?`<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--muted)">No projects match filters</td></tr>`
-        :f.map(p=>`<tr onclick="openDetail(${p.id})">
-          <td style="color:var(--muted)">${p.id}</td>
-          <td style="font-weight:600">${p.name}</td>
-          <td><span class="product-tag" style="background:${PCOL[p.product]}22;color:${PCOL[p.product]};border:1px solid ${PCOL[p.product]}44">${p.product}</span></td>
-          <td>${p.ba}</td><td>${p.pm}</td>
-          <td><span class="phase ${PCLS[p.phase]}">${p.phase}</span></td>
-          <td><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:${p.progress}%;background:${pc(p.progress)}"></div></div><span class="prog-label">${p.progress}%</span></div></td>
-          <td style="color:var(--muted);font-size:12px">${p.target||'—'}</td>
-          <td onclick="event.stopPropagation()">${role==='pm'
-            ?`<button class="btn btn-ghost btn-sm" onclick="openUpdateModal(${p.id})">Update</button> <button class="btn btn-ghost btn-sm" onclick="openEditModal(${p.id})">Edit</button>`
-            :'—'}</td>
-        </tr>`).join('')}
-      </tbody>
-    </table></div>`;
+
+  var live = projects.filter(function(p){ return p.phase === 'Live'; }).length;
+  var total = projects.length || 1;
+  var avg = Math.round(projects.reduce(function(a,p){ return a+p.progress; }, 0) / total);
+
+  var prodOptions = Object.keys(PCOL).map(function(p){
+    return '<option value="'+p+'"'+(fProd===p?' selected':'')+'>'+p+'</option>';
+  }).join('');
+  var phaseOptions = PHASES.map(function(ph){
+    return '<option value="'+ph+'"'+(fPhase===ph?' selected':'')+'>'+ph+'</option>';
+  }).join('');
+
+  var rows = f.length === 0
+    ? '<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--muted)">No projects match the selected filters</td></tr>'
+    : f.map(function(p){
+        var btns = role === 'pm'
+          ? '<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openUpdateModal('+p.id+')">Update</button> <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openEditModal('+p.id+')">Edit</button>'
+          : '—';
+        return '<tr onclick="openDetail('+p.id+')">'
+          + '<td style="color:var(--muted)">'+p.id+'</td>'
+          + '<td style="font-weight:600">'+p.name+'</td>'
+          + '<td><span class="product-tag" style="background:'+PCOL[p.product]+'22;color:'+PCOL[p.product]+';border:1px solid '+PCOL[p.product]+'44">'+p.product+'</span></td>'
+          + '<td>'+p.ba+'</td>'
+          + '<td>'+p.pm+'</td>'
+          + '<td><span class="phase '+PCLS[p.phase]+'">'+p.phase+'</span></td>'
+          + '<td><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:'+p.progress+'%;background:'+pc(p.progress)+'"></div></div><span class="prog-label">'+p.progress+'%</span></div></td>'
+          + '<td style="color:var(--muted);font-size:12px">'+(p.target||'—')+'</td>'
+          + '<td>'+btns+'</td>'
+          + '</tr>';
+      }).join('');
+
+  document.getElementById('content').innerHTML =
+    '<div class="stats">'
+    + '<div class="stat-card"><div class="label">Total Projects</div><div class="value" style="color:var(--accent)">'+projects.length+'</div><div class="sub">All products</div></div>'
+    + '<div class="stat-card"><div class="label">In Progress</div><div class="value" style="color:var(--yellow)">'+(projects.length-live)+'</div><div class="sub">Active phases</div></div>'
+    + '<div class="stat-card"><div class="label">Live</div><div class="value" style="color:var(--green)">'+live+'</div><div class="sub">Deployed</div></div>'
+    + '<div class="stat-card"><div class="label">Avg Progress</div><div class="value" style="color:'+pc(avg)+'">'+avg+'%</div><div class="sub">Overall</div></div>'
+    + '</div>'
+    + '<div class="filters">'
+    + '<input class="filter-input" placeholder="🔍  Search project or BA…" value="'+fSearch+'" oninput="fSearch=this.value;renderTable()"/>'
+    + '<select class="filter-select" onchange="fProd=this.value;renderTable()">'
+    + '<option value="all"'+(fProd==='all'?' selected':'')+'>All Products</option>'+prodOptions
+    + '</select>'
+    + '<select class="filter-select" onchange="fPhase=this.value;renderTable()">'
+    + '<option value="all"'+(fPhase==='all'?' selected':'')+'>All Phases</option>'+phaseOptions
+    + '</select>'
+    + (role==='pm' ? '<button class="btn btn-primary" onclick="openAddModal()">+ New Project</button>' : '')
+    + '</div>'
+    + '<div class="table-wrap"><table>'
+    + '<thead><tr><th>#</th><th>Project Name</th><th>Product</th><th>Business Analyst</th><th>Product Manager</th><th>Phase</th><th>Progress</th><th>Target</th><th>Actions</th></tr></thead>'
+    + '<tbody>'+rows+'</tbody>'
+    + '</table></div>';
 }
 
-// ── HEAD DASHBOARD ──
-function renderHD(){
-  document.getElementById('page-title').textContent='Head of Digital – Live Dashboard';
-  const byPhase={};PHASES.forEach(ph=>byPhase[ph]=projects.filter(p=>p.phase===ph).length);
-  const f=projects.filter(p=>{
-    if(hdProd!=='all'&&p.product!==hdProd)return false;
-    if(hdPhase!=='all'&&p.phase!==hdPhase)return false;
+// ── HEAD OF DIGITAL DASHBOARD ──
+function renderHD() {
+  document.getElementById('page-title').textContent = 'Head of Digital – Live Dashboard';
+
+  var byPhase = {};
+  PHASES.forEach(function(ph){ byPhase[ph] = projects.filter(function(p){ return p.phase===ph; }).length; });
+
+  var f = projects.filter(function(p) {
+    if (hdProd !== 'all' && p.product !== hdProd) return false;
+    if (hdPhase !== 'all' && p.phase !== hdPhase) return false;
     return true;
   });
-  document.getElementById('content').innerHTML=`
-    <div class="stats" style="margin-bottom:20px">
-      ${PHASES.map(ph=>`<div class="stat-card" style="border-color:${byPhase[ph]>0?'var(--accent)':'var(--border)'}">
-        <div class="label">${ph}</div>
-        <div class="value" style="font-size:22px;color:${byPhase[ph]>0?'var(--accent)':'var(--muted)'}">${byPhase[ph]}</div>
-        <div class="sub">project${byPhase[ph]!==1?'s':''}</div>
-      </div>`).join('')}
-    </div>
-    <div class="filters" style="margin-bottom:20px">
-      <select class="filter-select" onchange="hdProd=this.value;renderHD()">
-        <option value="all">All Products</option>
-        ${Object.keys(PCOL).map(p=>`<option value="${p}" ${hdProd===p?'selected':''}>${p}</option>`).join('')}
-      </select>
-      <select class="filter-select" onchange="hdPhase=this.value;renderHD()">
-        <option value="all">All Phases</option>
-        ${PHASES.map(ph=>`<option value="${ph}" ${hdPhase===ph?'selected':''}>${ph}</option>`).join('')}
-      </select>
-    </div>
-    <div class="hd-grid">
-      ${f.map(p=>{
-        const pi=PHASES.indexOf(p.phase),ll=p.logs&&p.logs.length?p.logs[p.logs.length-1]:null;
-        return `<div class="hd-card" onclick="openDetail(${p.id})" style="border-color:${p.phase==='Live'?'rgba(34,197,94,.3)':p.progress>=75?'rgba(59,130,246,.3)':'var(--border)'}">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-            <div>
-              <div style="font-size:14px;font-weight:700">${p.name}</div>
-              <div style="margin-top:3px"><span class="product-tag" style="background:${PCOL[p.product]}22;color:${PCOL[p.product]};border:1px solid ${PCOL[p.product]}44">${p.product}</span></div>
-            </div>
-            <span class="phase ${PCLS[p.phase]}">${p.phase}</span>
-          </div>
-          <div class="hd-big-prog"><div class="prog-bar"><div class="prog-fill" style="width:${p.progress}%;background:${pc(p.progress)}"></div></div></div>
-          <div class="hd-meta">
-            <span style="color:${pc(p.progress)};font-weight:700">${p.progress}% complete</span>
-            <span>Target: ${p.target||'TBD'}</span>
-          </div>
-          <div style="margin-top:10px;font-size:11px;color:var(--muted)">BA: <b style="color:var(--text)">${p.ba}</b> &nbsp;|&nbsp; PM: <b style="color:var(--text)">${p.pm}</b></div>
-          ${ll?`<div style="margin-top:10px;background:var(--surface);border-radius:7px;padding:9px 11px;font-size:11px;color:var(--muted)">
-            <span style="font-weight:600;color:var(--accent)">Latest:</span> ${ll.note} <span style="float:right">${ll.date}</span>
-          </div>`:''}
-          <div class="phase-stepper" style="margin-top:12px">
-            ${PHASES.map((ph,i)=>{const done=i<pi,cur=i===pi;return `${i>0?`<div class="phase-connector ${done||cur?'done':''}"></div>`:''}
-            <div class="phase-step ${done?'done':cur?'current':''}"><div class="dot">${done?'✓':i+1}</div><div class="sname">${ph}</div></div>`;}).join('')}
-          </div>
-        </div>`;
-      }).join('')}
-    </div>`;
+
+  var prodOptions = Object.keys(PCOL).map(function(p){
+    return '<option value="'+p+'"'+(hdProd===p?' selected':'')+'>'+p+'</option>';
+  }).join('');
+  var phaseOptions = PHASES.map(function(ph){
+    return '<option value="'+ph+'"'+(hdPhase===ph?' selected':'')+'>'+ph+'</option>';
+  }).join('');
+
+  var phaseCounts = PHASES.map(function(ph){
+    return '<div class="stat-card" style="border-color:'+(byPhase[ph]>0?'var(--accent)':'var(--border)')+'"><div class="label">'+ph+'</div><div class="value" style="font-size:22px;color:'+(byPhase[ph]>0?'var(--accent)':'var(--muted)')+'">'+byPhase[ph]+'</div><div class="sub">project'+(byPhase[ph]!==1?'s':'')+'</div></div>';
+  }).join('');
+
+  var cards = f.map(function(p) {
+    var pi = PHASES.indexOf(p.phase);
+    var logs = p.logs || [];
+    var ll = logs.length ? logs[logs.length-1] : null;
+    var latestNote = ll ? '<div style="margin-top:10px;background:var(--surface);border-radius:7px;padding:9px 11px;font-size:11px;color:var(--muted)"><span style="font-weight:600;color:var(--accent)">Latest:</span> '+ll.note+' <span style="float:right">'+ll.date+'</span></div>' : '';
+    var stepper = PHASES.map(function(ph, i){
+      var done = i < pi, cur = i === pi;
+      var connector = i > 0 ? '<div class="phase-connector '+(done||cur?'done':'')+'"></div>' : '';
+      return connector + '<div class="phase-step '+(done?'done':cur?'current':'')+'"><div class="dot">'+(done?'✓':(i+1))+'</div><div class="sname">'+ph+'</div></div>';
+    }).join('');
+    var borderColor = p.phase==='Live' ? 'rgba(34,197,94,.3)' : p.progress>=75 ? 'rgba(59,130,246,.3)' : 'var(--border)';
+    return '<div class="hd-card" onclick="openDetail('+p.id+')" style="border-color:'+borderColor+'">'
+      + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">'
+      + '<div><div style="font-size:14px;font-weight:700">'+p.name+'</div>'
+      + '<div style="margin-top:3px"><span class="product-tag" style="background:'+PCOL[p.product]+'22;color:'+PCOL[p.product]+';border:1px solid '+PCOL[p.product]+'44">'+p.product+'</span></div></div>'
+      + '<span class="phase '+PCLS[p.phase]+'">'+p.phase+'</span></div>'
+      + '<div class="hd-big-prog"><div class="prog-bar"><div class="prog-fill" style="width:'+p.progress+'%;background:'+pc(p.progress)+'"></div></div></div>'
+      + '<div class="hd-meta"><span style="color:'+pc(p.progress)+';font-weight:700">'+p.progress+'% complete</span><span>Target: '+(p.target||'TBD')+'</span></div>'
+      + '<div style="margin-top:10px;font-size:11px;color:var(--muted)">BA: <b style="color:var(--text)">'+p.ba+'</b> &nbsp;|&nbsp; PM: <b style="color:var(--text)">'+p.pm+'</b></div>'
+      + latestNote
+      + '<div class="phase-stepper" style="margin-top:12px">'+stepper+'</div>'
+      + '</div>';
+  }).join('');
+
+  document.getElementById('content').innerHTML =
+    '<div class="stats" style="margin-bottom:20px">'+phaseCounts+'</div>'
+    + '<div class="filters" style="margin-bottom:20px">'
+    + '<select class="filter-select" onchange="hdProd=this.value;renderHD()"><option value="all"'+(hdProd==='all'?' selected':'')+'>All Products</option>'+prodOptions+'</select>'
+    + '<select class="filter-select" onchange="hdPhase=this.value;renderHD()"><option value="all"'+(hdPhase==='all'?' selected':'')+'>All Phases</option>'+phaseOptions+'</select>'
+    + '</div>'
+    + '<div class="hd-grid">'+cards+'</div>';
 }
 
-// ── DETAIL ──
-window.openDetail=function(id){
-  const p=projects.find(x=>x.id===id);if(!p)return;
-  const pi=PHASES.indexOf(p.phase);
-  document.getElementById('dm-title').textContent=p.name;
-  const logs=p.logs||[];
-  document.getElementById('dm-body').innerHTML=`
-    <div class="detail-grid">
-      <div class="detail-item"><div class="dk">Product</div><div class="dv"><span class="product-tag" style="background:${PCOL[p.product]}22;color:${PCOL[p.product]}">${p.product}</span></div></div>
-      <div class="detail-item"><div class="dk">Phase</div><div class="dv"><span class="phase ${PCLS[p.phase]}">${p.phase}</span></div></div>
-      <div class="detail-item"><div class="dk">Business Analyst</div><div class="dv">${p.ba}</div></div>
-      <div class="detail-item"><div class="dk">Product Manager</div><div class="dv">${p.pm}</div></div>
-      <div class="detail-item"><div class="dk">Start Date</div><div class="dv">${p.start||'—'}</div></div>
-      <div class="detail-item"><div class="dk">Target Go-Live</div><div class="dv">${p.target||'—'}</div></div>
-    </div>
-    <div style="margin-bottom:6px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Overall Progress</div>
-    <div class="prog-wrap" style="margin-bottom:16px">
-      <div class="prog-bar" style="flex:1"><div class="prog-fill" style="width:${p.progress}%;background:${pc(p.progress)}"></div></div>
-      <span style="font-size:15px;font-weight:700;color:${pc(p.progress)}">${p.progress}%</span>
-    </div>
-    <div style="margin-bottom:6px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Phase Journey</div>
-    <div class="phase-stepper">
-      ${PHASES.map((ph,i)=>{const done=i<pi,cur=i===pi;return `${i>0?`<div class="phase-connector ${done||cur?'done':''}"></div>`:''}
-      <div class="phase-step ${done?'done':cur?'current':''}"><div class="dot">${done?'✓':i+1}</div><div class="sname">${ph}</div></div>`;}).join('')}
-    </div>
-    <div style="margin:16px 0 8px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Update Log (${logs.length})</div>
-    <div class="update-log">
-      ${logs.length===0?`<div style="color:var(--muted);font-size:12px;padding:8px">No updates yet.</div>`
-        :[...logs].reverse().map(l=>`<div class="log-item"><div class="log-meta">${l.date}</div>${l.note}</div>`).join('')}
-    </div>`;
-  document.getElementById('detail-modal').style.display='flex';
-};
-window.closeDetailModal=function(){document.getElementById('detail-modal').style.display='none';};
-
-// ── ADD / EDIT ──
-window.openAddModal=function(){
-  editId=null;
-  document.getElementById('modal-title').textContent='Add New Project';
-  ['f-name','f-ba','f-pm-name','f-update'].forEach(i=>document.getElementById(i).value='');
-  document.getElementById('f-progress').value='0';
-  document.getElementById('f-start').value='';
-  document.getElementById('f-target').value='';
-  document.getElementById('modal').style.display='flex';
-};
-window.openEditModal=function(id){
-  const p=projects.find(x=>x.id===id);if(!p)return;
-  editId=id;
-  document.getElementById('modal-title').textContent='Edit Project';
-  document.getElementById('f-name').value=p.name;
-  document.getElementById('f-ba').value=p.ba;
-  document.getElementById('f-pm-name').value=p.pm;
-  document.getElementById('f-product').value=p.product;
-  document.getElementById('f-phase').value=p.phase;
-  document.getElementById('f-progress').value=p.progress;
-  document.getElementById('f-start').value=p.start||'';
-  document.getElementById('f-target').value=p.target||'';
-  document.getElementById('f-update').value='';
-  document.getElementById('modal').style.display='flex';
-};
-window.closeModal=function(){document.getElementById('modal').style.display='none';};
-
-window.saveProject=async function(){
-  const name=document.getElementById('f-name').value.trim();
-  const ba=document.getElementById('f-ba').value.trim();
-  const pm=document.getElementById('f-pm-name').value.trim();
-  if(!name||!ba||!pm){toast('Please fill in Project Name, BA, and PM','error');return;}
-  const note=document.getElementById('f-update').value.trim();
-  if(editId){
-    const p=projects.find(x=>x.id===editId);
-    Object.assign(p,{name,ba,pm,product:document.getElementById('f-product').value,phase:document.getElementById('f-phase').value,progress:parseInt(document.getElementById('f-progress').value)||0,start:document.getElementById('f-start').value,target:document.getElementById('f-target').value});
-    if(note){if(!p.logs)p.logs=[];p.logs.push({date:td(),note});}
-  }else{
-    const maxId=projects.reduce((m,p)=>Math.max(m,p.id),0);
-    projects.push({id:maxId+1,name,ba,pm,product:document.getElementById('f-product').value,phase:document.getElementById('f-phase').value,progress:parseInt(document.getElementById('f-progress').value)||0,start:document.getElementById('f-start').value,target:document.getElementById('f-target').value,logs:note?[{date:td(),note}]:[]});
-  }
-  const ok=await pushToFirebase();
-  if(ok){closeModal();toast(editId?'✅ Project updated — synced live!':'✅ Project added — visible to all!','success');}
-};
-
-// ── UPDATE ──
-window.openUpdateModal=function(id){
-  updateId=id;
-  const p=projects.find(x=>x.id===id);
-  document.getElementById('um-title').textContent='Update: '+p.name;
-  document.getElementById('u-phase').value=p.phase;
-  document.getElementById('u-progress').value=p.progress;
-  document.getElementById('u-note').value='';
-  document.getElementById('update-modal').style.display='flex';
-};
-window.closeUpdateModal=function(){document.getElementById('update-modal').style.display='none';};
-window.submitUpdate=async function(){
-  const note=document.getElementById('u-note').value.trim();
-  if(!note){toast('Please enter an update note','error');return;}
-  const p=projects.find(x=>x.id===updateId);
-  p.phase=document.getElementById('u-phase').value;
-  p.progress=parseInt(document.getElementById('u-progress').value)||p.progress;
-  if(!p.logs)p.logs=[];
-  p.logs.push({date:td(),note});
-  const ok=await pushToFirebase();
-  if(ok){closeUpdateModal();toast('✅ Update saved — Head of Digital sees this instantly!','success');}
-};
-
-function td(){return new Date().toISOString().slice(0,10);}
-function toast(msg,type='success'){
-  const t=document.createElement('div');
-  t.className=`toast toast-${type}`;t.textContent=msg;
-  document.body.appendChild(t);setTimeout(()=>t.remove(),3500);
+// ── DETAIL MODAL ──
+function openDetail(id) {
+  var p = projects.find(function(x){ return x.id===id; });
+  if (!p) return;
+  var pi = PHASES.indexOf(p.phase);
+  var logs = p.logs || [];
+  var stepper = PHASES.map(function(ph,i){
+    var done=i<pi, cur=i===pi;
+    return (i>0?'<div class="phase-connector '+(done||cur?'done':'')+'"></div>':'')
+      +'<div class="phase-step '+(done?'done':cur?'current':'')+'"><div class="dot">'+(done?'✓':(i+1))+'</div><div class="sname">'+ph+'</div></div>';
+  }).join('');
+  var logItems = logs.length === 0
+    ? '<div style="color:var(--muted);font-size:12px;padding:8px">No updates yet.</div>'
+    : logs.slice().reverse().map(function(l){ return '<div class="log-item"><div class="log-meta">'+l.date+'</div>'+l.note+'</div>'; }).join('');
+  document.getElementById('dm-title').textContent = p.name;
+  document.getElementById('dm-body').innerHTML =
+    '<div class="detail-grid">'
+    +'<div class="detail-item"><div class="dk">Product</div><div class="dv"><span class="product-tag" style="background:'+PCOL[p.product]+'22;color:'+PCOL[p.product]+'">'+p.product+'</span></div></div>'
+    +'<div class="detail-item"><div class="dk">Phase</div><div class="dv"><span class="phase '+PCLS[p.phase]+'">'+p.phase+'</span></div></div>'
+    +'<div class="detail-item"><div class="dk">Business Analyst</div><div class="dv">'+p.ba+'</div></div>'
+    +'<div class="detail-item"><div class="dk">Product Manager</div><div class="dv">'+p.pm+'</div></div>'
+    +'<div class="detail-item"><div class="dk">Start Date</div><div class="dv">'+(p.start||'—')+'</div></div>'
+    +'<div class="detail-item"><div class="dk">Target Go-Live</div><div class="dv">'+(p.target||'—')+'</div></div>'
+    +'</div>'
+    +'<div style="margin-bottom:6px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Overall Progress</div>'
+    +'<div class="prog-wrap" style="margin-bottom:16px"><div class="prog-bar" style="flex:1"><div class="prog-fill" style="width:'+p.progress+'%;background:'+pc(p.progress)+'"></div></div><span style="font-size:15px;font-weight:700;color:'+pc(p.progress)+'">'+p.progress+'%</span></div>'
+    +'<div style="margin-bottom:6px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Phase Journey</div>'
+    +'<div class="phase-stepper">'+stepper+'</div>'
+    +'<div style="margin:16px 0 8px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Update Log ('+logs.length+')</div>'
+    +'<div class="update-log">'+logItems+'</div>';
+  document.getElementById('detail-modal').style.display = 'flex';
 }
+function closeDetailModal(){ document.getElementById('detail-modal').style.display='none'; }
 
-// ── EXPOSE ALL FUNCTIONS CALLED FROM INLINE HTML (module scope fix) ──
-// Inside type="module", functions are NOT global by default.
-// We must explicitly attach everything called via onclick/onchange to window.
-window.renderTable  = ()=> renderTable();
-window.renderHD     = ()=> renderHD();
-window.openAddModal = ()=> openAddModal();
-window.openEditModal= (id)=> openEditModal(id);
-window.openUpdateModal=(id)=> openUpdateModal(id);
-window.closeModal   = ()=> closeModal();
-window.closeUpdateModal=()=> closeUpdateModal();
-window.openDetail   = (id)=> openDetail(id);
-window.closeDetailModal=()=> closeDetailModal();
-window.saveProject  = ()=> saveProject();
-window.submitUpdate = ()=> submitUpdate();
+// ── ADD / EDIT MODAL ──
+function openAddModal() {
+  editId = null;
+  document.getElementById('modal-title').textContent = 'Add New Project';
+  ['f-name','f-ba','f-pm-name','f-update'].forEach(function(i){ document.getElementById(i).value=''; });
+  document.getElementById('f-progress').value = '0';
+  document.getElementById('f-start').value = '';
+  document.getElementById('f-target').value = '';
+  document.getElementById('modal').style.display = 'flex';
+}
+function openEditModal(id) {
+  var p = projects.find(function(x){ return x.id===id; });
+  if (!p) return;
+  editId = id;
+  document.getElementById('modal-title').textContent = 'Edit Project';
+  document.getElementById('f-name').value = p.name;
+  document.getElementById('f-ba').value = p.ba;
+  document.getElementById('f-pm-name').value = p.pm;
+  document.getElementById('f-product').value = p.product;
+  document.getElementById('f-phase').value = p.phase;
+  document.getElementById('f-progress').value = p.progress;
+  document.getElementById('f-start').value = p.start||'';
+  document.getElementById('f-target').value = p.target||'';
+  document.getElementById('f-update').value = '';
+  document.getElementById('modal').style.display = 'flex';
+}
+function closeModal(){ document.getElementById('modal').style.display='none'; }
 
-// ── BOOT ──
-if(configured){
-  if(initFirebase()){
-    renderNav();
-    listenToProjects(); // real-time listener — auto-updates all open browsers instantly
+function saveProject() {
+  var name = document.getElementById('f-name').value.trim();
+  var ba   = document.getElementById('f-ba').value.trim();
+  var pm   = document.getElementById('f-pm-name').value.trim();
+  if (!name||!ba||!pm){ toast('Please fill in Project Name, BA, and PM','error'); return; }
+  var note = document.getElementById('f-update').value.trim();
+  if (editId) {
+    var p = projects.find(function(x){ return x.id===editId; });
+    p.name=name; p.ba=ba; p.pm=pm;
+    p.product  = document.getElementById('f-product').value;
+    p.phase    = document.getElementById('f-phase').value;
+    p.progress = parseInt(document.getElementById('f-progress').value)||0;
+    p.start    = document.getElementById('f-start').value;
+    p.target   = document.getElementById('f-target').value;
+    if (note){ if(!p.logs)p.logs=[]; p.logs.push({date:today(),note:note}); }
   } else {
-    document.getElementById('loading-msg').textContent='❌ Firebase init failed. Check your config values.';
+    var maxId = projects.reduce(function(m,p){ return Math.max(m,p.id); }, 0);
+    projects.push({
+      id: maxId+1, name:name, ba:ba, pm:pm,
+      product:  document.getElementById('f-product').value,
+      phase:    document.getElementById('f-phase').value,
+      progress: parseInt(document.getElementById('f-progress').value)||0,
+      start:    document.getElementById('f-start').value,
+      target:   document.getElementById('f-target').value,
+      logs:     note ? [{date:today(),note:note}] : []
+    });
   }
-} else {
-  // Demo mode — no Firebase config yet
-  projects = seedData();
-  hideLoading();
-  renderNav();
+  closeModal();
+  if (configured) { saveToFirebase(); }
+  toast(editId ? '✅ Project updated!' : '✅ Project added!', 'success');
   renderContent();
 }
 
+// ── UPDATE MODAL ──
+function openUpdateModal(id) {
+  updateId = id;
+  var p = projects.find(function(x){ return x.id===id; });
+  document.getElementById('um-title').textContent = 'Update: ' + p.name;
+  document.getElementById('u-phase').value = p.phase;
+  document.getElementById('u-progress').value = p.progress;
+  document.getElementById('u-note').value = '';
+  document.getElementById('update-modal').style.display = 'flex';
+}
+function closeUpdateModal(){ document.getElementById('update-modal').style.display='none'; }
+
+function submitUpdate() {
+  var note = document.getElementById('u-note').value.trim();
+  if (!note){ toast('Please enter an update note','error'); return; }
+  var p = projects.find(function(x){ return x.id===updateId; });
+  p.phase    = document.getElementById('u-phase').value;
+  p.progress = parseInt(document.getElementById('u-progress').value)||p.progress;
+  if (!p.logs) p.logs = [];
+  p.logs.push({date:today(), note:note});
+  closeUpdateModal();
+  if (configured) { saveToFirebase(); }
+  toast('✅ Update posted — visible to all users instantly!', 'success');
+  renderContent();
+}
+
+function today(){ return new Date().toISOString().slice(0,10); }
+
+function toast(msg, type) {
+  type = type || 'success';
+  var t = document.createElement('div');
+  t.className = 'toast toast-' + type;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 3500);
+}
+
+// ── START ──
+window.onload = function(){ initApp(); };
 </script>
 </body>
 </html>
