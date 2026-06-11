@@ -233,7 +233,29 @@ td{padding:13px 16px;font-size:13px;vertical-align:middle}
 <!-- ── PIN / ROLE SELECTION SCREEN ── -->
 <div class="pin-screen" id="pin-screen">
   <div class="pin-card">
-    <div class="pin-logo">UBA</div>
+    <div style="margin:0 auto 18px;width:140px">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 185 54" shape-rendering="crispEdges">
+  <!-- U -->
+  <path d="M2,4 L2,35 Q2,48 16,48 Q30,48 30,35 L30,4 L22,4 L22,34 Q22,41 16,41 Q10,41 10,34 L10,4 Z" fill="#C8102E"/>
+  <!-- B -->
+  <path d="M34,4 L34,48 L50,48 Q64,48 64,38 Q64,32 58,30 Q63,28 63,20 Q63,4 50,4 Z
+           M42,11 L49,11 Q55,11 55,19 Q55,26 49,26 L42,26 Z
+           M42,32 L50,32 Q57,32 57,39 Q57,41 50,41 L42,41 Z" fill="#C8102E" fill-rule="evenodd"/>
+  <!-- A -->
+  <path d="M68,48 L76,48 L78,40 L92,40 L94,48 L102,48 L88,4 L82,4 Z
+           M80,33 L85,14 L90,33 Z" fill="#C8102E" fill-rule="evenodd"/>
+  <!-- Africa chevron icon — precise angular shape matching UBA brand -->
+  <g transform="translate(108,0)">
+    <!-- Outer bold shape: tall parallelogram with diagonal cut -->
+    <path d="M14,0 L38,0 L38,4 L22,4 L38,28 L38,54 L26,54 L4,18 L4,54 L0,54 L0,4 Z" fill="#C8102E"/>
+    <!-- Inner white negative space to create the "N slash" -->
+    <path d="M8,54 L8,26 L28,54 Z" fill="#C8102E"/>
+    <path d="M14,4 L34,4 L14,34 Z" fill="#fff"/>
+  </g>
+  <!-- United Bank for Africa tagline -->
+  <text x="2" y="54" font-family="Arial,Helvetica,sans-serif" font-size="10.5" font-weight="400" fill="#C8102E" letter-spacing="0.15">United Bank for Africa</text>
+</svg>
+    </div>
     <h2>Digital Banking Ops</h2>
     <p>Select your role to continue</p>
     <div class="pin-btns">
@@ -266,7 +288,27 @@ td{padding:13px 16px;font-size:13px;vertical-align:middle}
 
 <!-- ── LOADING ── -->
 <div class="loading-screen" id="loading-screen" style="display:none">
-  <div class="uba-emblem" style="width:52px;height:52px;font-size:20px">UBA</div>
+  <div style="width:150px;margin-bottom:4px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 185 54" shape-rendering="crispEdges">
+  <!-- U -->
+  <path d="M2,4 L2,35 Q2,48 16,48 Q30,48 30,35 L30,4 L22,4 L22,34 Q22,41 16,41 Q10,41 10,34 L10,4 Z" fill="#C8102E"/>
+  <!-- B -->
+  <path d="M34,4 L34,48 L50,48 Q64,48 64,38 Q64,32 58,30 Q63,28 63,20 Q63,4 50,4 Z
+           M42,11 L49,11 Q55,11 55,19 Q55,26 49,26 L42,26 Z
+           M42,32 L50,32 Q57,32 57,39 Q57,41 50,41 L42,41 Z" fill="#C8102E" fill-rule="evenodd"/>
+  <!-- A -->
+  <path d="M68,48 L76,48 L78,40 L92,40 L94,48 L102,48 L88,4 L82,4 Z
+           M80,33 L85,14 L90,33 Z" fill="#C8102E" fill-rule="evenodd"/>
+  <!-- Africa chevron icon — precise angular shape matching UBA brand -->
+  <g transform="translate(108,0)">
+    <!-- Outer bold shape: tall parallelogram with diagonal cut -->
+    <path d="M14,0 L38,0 L38,4 L22,4 L38,28 L38,54 L26,54 L4,18 L4,54 L0,54 L0,4 Z" fill="#C8102E"/>
+    <!-- Inner white negative space to create the "N slash" -->
+    <path d="M8,54 L8,26 L28,54 Z" fill="#C8102E"/>
+    <path d="M14,4 L34,4 L14,34 Z" fill="#fff"/>
+  </g>
+  <!-- United Bank for Africa tagline -->
+  <text x="2" y="54" font-family="Arial,Helvetica,sans-serif" font-size="10.5" font-weight="400" fill="#C8102E" letter-spacing="0.15">United Bank for Africa</text>
+</svg></div>
   <div class="spinner"></div>
   <div style="font-size:13px;color:var(--text2)" id="loading-msg">Connecting to Firebase…</div>
 </div>
@@ -275,12 +317,31 @@ td{padding:13px 16px;font-size:13px;vertical-align:middle}
 <div class="app" id="app" style="display:none">
   <div class="sidebar">
     <div class="sidebar-logo">
-      <div class="uba-logo">
-        <div class="uba-emblem">UBA</div>
-        <div class="uba-text">
-          <h2>Digital Banking</h2>
-          <p>Project Tracker</p>
+      <div style="padding:2px 0 6px">
+        <div style="width:130px;margin-bottom:6px">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 185 54" shape-rendering="crispEdges">
+  <!-- U -->
+  <path d="M2,4 L2,35 Q2,48 16,48 Q30,48 30,35 L30,4 L22,4 L22,34 Q22,41 16,41 Q10,41 10,34 L10,4 Z" fill="#C8102E"/>
+  <!-- B -->
+  <path d="M34,4 L34,48 L50,48 Q64,48 64,38 Q64,32 58,30 Q63,28 63,20 Q63,4 50,4 Z
+           M42,11 L49,11 Q55,11 55,19 Q55,26 49,26 L42,26 Z
+           M42,32 L50,32 Q57,32 57,39 Q57,41 50,41 L42,41 Z" fill="#C8102E" fill-rule="evenodd"/>
+  <!-- A -->
+  <path d="M68,48 L76,48 L78,40 L92,40 L94,48 L102,48 L88,4 L82,4 Z
+           M80,33 L85,14 L90,33 Z" fill="#C8102E" fill-rule="evenodd"/>
+  <!-- Africa chevron icon — precise angular shape matching UBA brand -->
+  <g transform="translate(108,0)">
+    <!-- Outer bold shape: tall parallelogram with diagonal cut -->
+    <path d="M14,0 L38,0 L38,4 L22,4 L38,28 L38,54 L26,54 L4,18 L4,54 L0,54 L0,4 Z" fill="#C8102E"/>
+    <!-- Inner white negative space to create the "N slash" -->
+    <path d="M8,54 L8,26 L28,54 Z" fill="#C8102E"/>
+    <path d="M14,4 L34,4 L14,34 Z" fill="#fff"/>
+  </g>
+  <!-- United Bank for Africa tagline -->
+  <text x="2" y="54" font-family="Arial,Helvetica,sans-serif" font-size="10.5" font-weight="400" fill="#C8102E" letter-spacing="0.15">United Bank for Africa</text>
+</svg>
         </div>
+        <div style="font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.7px;padding-left:1px">Digital Banking · Project Tracker</div>
       </div>
     </div>
     <nav class="nav" id="nav"></nav>
@@ -300,7 +361,22 @@ td{padding:13px 16px;font-size:13px;vertical-align:middle}
       </div>
       <div class="topbar-right">
         <div class="sync-pill"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Live</span></div>
-        <span class="uba-badge">UBA</span>
+        <div style="display:flex;align-items:center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 145 40" shape-rendering="crispEdges" style="height:32px;display:block">
+  <!-- U -->
+  <path d="M1,3 L1,26 Q1,36 12,36 Q23,36 23,26 L23,3 L17,3 L17,25 Q17,31 12,31 Q7,31 7,25 L7,3 Z" fill="#C8102E"/>
+  <!-- B -->
+  <path d="M26,3 L26,36 L39,36 Q50,36 50,28 Q50,23 45,22 Q49,20 49,14 Q49,3 39,3 Z
+           M32,8 L38,8 Q43,8 43,14 Q43,19 38,19 L32,19 Z
+           M32,24 L39,24 Q44,24 44,29 Q44,31 39,31 L32,31 Z" fill="#C8102E" fill-rule="evenodd"/>
+  <!-- A -->
+  <path d="M53,36 L59,36 L61,30 L72,30 L74,36 L80,36 L69,3 L64,3 Z
+           M63,25 L67,10 L71,25 Z" fill="#C8102E" fill-rule="evenodd"/>
+  <!-- Africa icon -->
+  <g transform="translate(85,0)">
+    <path d="M11,0 L30,0 L30,3 L17,3 L30,22 L30,40 L20,40 L3,14 L3,40 L0,40 L0,3 Z" fill="#C8102E"/>
+    <path d="M11,3 L26,3 L11,26 Z" fill="#fff"/>
+  </g>
+</svg></div>
         <div class="avatar-chip" id="avatar-chip">PM</div>
       </div>
     </div>
