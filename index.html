@@ -357,12 +357,12 @@ function renderTable(){
       <div class="stat-card"><div class="label">Avg Progress</div><div class="value" style="color:${pc(avg)}">${avg}%</div><div class="sub">Overall</div></div>
     </div>
     <div class="filters">
-      <input class="filter-input" placeholder="🔍  Search project or BA…" value="${fSearch}" oninput="fSearch=this.value;window._rt()"/>
-      <select class="filter-select" onchange="fProd=this.value;window._rt()">
+      <input class="filter-input" placeholder="🔍  Search project or BA…" value="${fSearch}" oninput="fSearch=this.value;renderTable()"/>
+      <select class="filter-select" onchange="fProd=this.value;renderTable()">
         <option value="all">All Products</option>
         ${Object.keys(PCOL).map(p=>`<option value="${p}" ${fProd===p?'selected':''}>${p}</option>`).join('')}
       </select>
-      <select class="filter-select" onchange="fPhase=this.value;window._rt()">
+      <select class="filter-select" onchange="fPhase=this.value;renderTable()">
         <option value="all">All Phases</option>
         ${PHASES.map(ph=>`<option value="${ph}" ${fPhase===ph?'selected':''}>${ph}</option>`).join('')}
       </select>
@@ -386,7 +386,6 @@ function renderTable(){
         </tr>`).join('')}
       </tbody>
     </table></div>`;
-  window._rt=renderTable;
 }
 
 // ── HEAD DASHBOARD ──
@@ -407,11 +406,11 @@ function renderHD(){
       </div>`).join('')}
     </div>
     <div class="filters" style="margin-bottom:20px">
-      <select class="filter-select" onchange="hdProd=this.value;window._rhd()">
+      <select class="filter-select" onchange="hdProd=this.value;renderHD()">
         <option value="all">All Products</option>
         ${Object.keys(PCOL).map(p=>`<option value="${p}" ${hdProd===p?'selected':''}>${p}</option>`).join('')}
       </select>
-      <select class="filter-select" onchange="hdPhase=this.value;window._rhd()">
+      <select class="filter-select" onchange="hdPhase=this.value;renderHD()">
         <option value="all">All Phases</option>
         ${PHASES.map(ph=>`<option value="${ph}" ${hdPhase===ph?'selected':''}>${ph}</option>`).join('')}
       </select>
@@ -443,7 +442,6 @@ function renderHD(){
         </div>`;
       }).join('')}
     </div>`;
-  window._rhd=renderHD;
 }
 
 // ── DETAIL ──
@@ -554,6 +552,21 @@ function toast(msg,type='success'){
   t.className=`toast toast-${type}`;t.textContent=msg;
   document.body.appendChild(t);setTimeout(()=>t.remove(),3500);
 }
+
+// ── EXPOSE ALL FUNCTIONS CALLED FROM INLINE HTML (module scope fix) ──
+// Inside type="module", functions are NOT global by default.
+// We must explicitly attach everything called via onclick/onchange to window.
+window.renderTable  = ()=> renderTable();
+window.renderHD     = ()=> renderHD();
+window.openAddModal = ()=> openAddModal();
+window.openEditModal= (id)=> openEditModal(id);
+window.openUpdateModal=(id)=> openUpdateModal(id);
+window.closeModal   = ()=> closeModal();
+window.closeUpdateModal=()=> closeUpdateModal();
+window.openDetail   = (id)=> openDetail(id);
+window.closeDetailModal=()=> closeDetailModal();
+window.saveProject  = ()=> saveProject();
+window.submitUpdate = ()=> submitUpdate();
 
 // ── BOOT ──
 if(configured){
