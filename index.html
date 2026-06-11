@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>DigitalOps – Project Tracker</title>
+
+<!-- ════════════════════════════════════════════════════
+     FIREBASE SETUP  ← YOU ONLY NEED TO CHANGE THIS BLOCK
+     Step-by-step instructions at the bottom of this file
+     ════════════════════════════════════════════════════ -->
+<script>
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyDB1Upcp3QmFYOKYR9PTK36iNviNiJtUFc",
+  authDomain: "digipulse-c2ae2.firebaseapp.com",
+  databaseURL: "https://digipulse-c2ae2-default-rtdb.firebaseio.com",
+  projectId: "digipulse-c2ae2",
+  storageBucket: "digipulse-c2ae2.firebasestorage.app",
+  messagingSenderId: "798551482503",
+  appId: "1:798551482503:web:4e66c4e57149264a105822"
+  };
+</script>
+
+<style>
+:root{--bg:#0b1120;--surface:#131d30;--card:#1a2540;--border:#263352;--accent:#3b82f6;--accent2:#6366f1;--green:#22c55e;--yellow:#eab308;--orange:#f97316;--red:#ef4444;--purple:#a855f7;--cyan:#06b6d4;--text:#e2e8f0;--muted:#8899bb;--radius:10px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif;min-height:100vh}
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.logo{padding:22px 18px 14px}.logo h2{font-size:15px;font-weight:700;color:var(--accent);letter-spacing:.5px}.logo p{font-size:11px;color:var(--muted);margin-top:2px}
+.nav{padding:8px 10px;flex:1}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s;margin-bottom:2px}
+.nav-item:hover{background:var(--card);color:var(--text)}.nav-item.active{background:var(--accent);color:#fff}
+.role-switch{padding:14px 12px;border-top:1px solid var(--border)}
+.role-btn{display:block;width:100%;padding:9px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;text-align:center;transition:all .2s}
+.role-btn.active-role{border-color:var(--accent);color:var(--accent);background:rgba(59,130,246,.1)}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
+.topbar h1{font-size:18px;font-weight:700}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.badge-live{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3);font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--accent2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.content{padding:24px 28px;flex:1}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.filter-select,.filter-input{background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;font-size:13px;outline:none;cursor:pointer}
+.filter-input{min-width:200px}.filter-select:focus,.filter-input:focus{border-color:var(--accent)}
+.btn{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#2563eb}
+.btn-ghost{background:var(--card);color:var(--text);border:1px solid var(--border)}.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.stat-card .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.stat-card .value{font-size:28px;font-weight:800;margin:6px 0 2px}.stat-card .sub{font-size:11px;color:var(--muted)}
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead th{padding:12px 16px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);background:var(--surface);border-bottom:1px solid var(--border);white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer}
+tbody tr:last-child{border-bottom:none}tbody tr:hover{background:rgba(59,130,246,.05)}
+td{padding:13px 16px;font-size:13px;vertical-align:middle}
+.phase{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.phase-dev{background:rgba(99,102,241,.15);color:#818cf8;border:1px solid rgba(99,102,241,.3)}
+.phase-sit{background:rgba(6,182,212,.15);color:#22d3ee;border:1px solid rgba(6,182,212,.3)}
+.phase-uat{background:rgba(234,179,8,.15);color:#fde047;border:1px solid rgba(234,179,8,.3)}
+.phase-pentest{background:rgba(249,115,22,.15);color:#fb923c;border:1px solid rgba(249,115,22,.3)}
+.phase-ccb{background:rgba(168,85,247,.15);color:#c084fc;border:1px solid rgba(168,85,247,.3)}
+.phase-pilot{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3)}
+.phase-live{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
+.prog-wrap{display:flex;align-items:center;gap:8px}
+.prog-bar{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;min-width:80px}
+.prog-fill{height:100%;border-radius:3px;transition:width .4s}
+.prog-label{font-size:12px;font-weight:600;color:var(--muted);width:32px;text-align:right}
+.product-tag{display:inline-block;padding:2px 9px;border-radius:6px;font-size:11px;font-weight:600}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:14px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid var(--border)}
+.modal-head h3{font-size:16px;font-weight:700}
+.close-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1}
+.modal-body{padding:20px 24px;display:flex;flex-direction:column;gap:14px}
+.field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13px;outline:none;font-family:inherit}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+.field textarea{resize:vertical;min-height:70px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.detail-item{background:var(--surface);border-radius:8px;padding:12px}
+.detail-item .dk{font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
+.detail-item .dv{font-size:13px;font-weight:600}
+.phase-stepper{display:flex;align-items:center;margin:16px 0;overflow-x:auto;padding-bottom:4px}
+.phase-step{display:flex;flex-direction:column;align-items:center;flex:1;min-width:60px}
+.phase-step .dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:var(--surface);z-index:1}
+.phase-step .sname{font-size:9px;color:var(--muted);margin-top:5px;text-align:center}
+.phase-step.done .dot{background:var(--green);border-color:var(--green);color:#fff}
+.phase-step.current .dot{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 0 4px rgba(59,130,246,.25)}
+.phase-connector{flex:1;height:2px;background:var(--border);margin-top:-14px}
+.phase-connector.done{background:var(--green)}
+.update-log{display:flex;flex-direction:column;gap:10px;max-height:180px;overflow-y:auto}
+.log-item{background:var(--surface);border-radius:8px;padding:10px 12px;font-size:12px}
+.log-item .log-meta{color:var(--muted);font-size:11px;margin-bottom:3px}
+.hd-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.hd-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:border-color .2s}
+.hd-card:hover{border-color:var(--accent)}
+.hd-big-prog{margin:10px 0 6px}.hd-big-prog .prog-bar{height:10px;border-radius:5px}
+.hd-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.pulse{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(34,197,94,.5);animation:pulse 1.5s infinite;margin-right:4px}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}70%{box-shadow:0 0 0 6px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+.sync-indicator{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);padding:4px 10px;background:var(--card);border:1px solid var(--border);border-radius:20px}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.sync-dot.syncing{background:var(--yellow);animation:pulse 1s infinite}
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:200;animation:slideUp .3s ease;max-width:340px}
+.toast-success{background:#166534;color:#bbf7d0;border:1px solid #22c55e}
+.toast-error{background:#7f1d1d;color:#fecaca;border:1px solid #ef4444}
+.toast-info{background:#1e3a5f;color:#bfdbfe;border:1px solid #3b82f6}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.loading-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:300;gap:16px}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.setup-banner{background:#1e1a05;border:1px solid var(--yellow);border-radius:10px;padding:16px 20px;margin-bottom:20px;font-size:13px;line-height:1.7}
+.setup-banner b{color:var(--yellow)}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loading-screen">
+  <div style="font-size:32px">⚡</div>
+  <div class="spinner"></div>
+  <div style="font-size:14px;color:var(--muted)" id="loading-msg">Connecting to Firebase…</div>
+</div>
+
+<div class="app" id="app" style="display:none">
+  <div class="sidebar">
+    <div class="logo"><h2>⚡ DigitalOps</h2><p>Project Tracker</p></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="role-switch">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;text-align:center">SWITCH VIEW</div>
+      <button class="role-btn active-role" id="btn-pm" onclick="setRole('pm')">📋 Product Manager</button>
+      <button class="role-btn" id="btn-hd" onclick="setRole('hd')" style="margin-top:6px">👁️ Head of Digital</button>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1 id="page-title">Project Tracker</h1>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px" id="page-sub">Digital Banking Department</div>
+      </div>
+      <div class="topbar-right">
+        <div class="sync-indicator"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Connecting…</span></div>
+        <span class="badge-live"><span class="pulse"></span>Firebase Live</span>
+        <div class="avatar" id="avatar-init">PM</div>
+      </div>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="overlay" id="modal" style="display:none">
+  <div class="modal">
+    <div class="modal-head"><h3 id="modal-title">Add New Project</h3><button class="close-btn" onclick="closeModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="row2">
+        <div class="field"><label>Project Name</label><input id="f-name" placeholder="e.g. Card Tokenization"/></div>
+        <div class="field"><label>Product / Team</label>
+          <select id="f-product"><option>Mobile App</option><option>Internet Banking</option><option>Leo</option><option>POS</option><option>Web Team</option><option>Cards</option><option>USSD</option></select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Business Analyst</label><input id="f-ba" placeholder="Full name"/></div>
+        <div class="field"><label>Product Manager</label><input id="f-pm-name" placeholder="Full name"/></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Current Phase</label>
+          <select id="f-phase"><option>Development</option><option>SIT</option><option>UAT</option><option>PENTEST</option><option>CCB</option><option>Pilot</option><option>Live</option></select>
+        </div>
+        <div class="field"><label>Progress (%)</label><input id="f-progress" type="number" min="0" max="100" placeholder="0–100"/></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Start Date</label><input id="f-start" type="date"/></div>
+        <div class="field"><label>Target Go-Live</label><input id="f-target" type="date"/></div>
+      </div>
+      <div class="field"><label>Initial Comment</label><textarea id="f-update" placeholder="Brief status note…"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProject()">Save Project</button>
+    </div>
+  </div>
+</div>
+
+<!-- UPDATE MODAL -->
+<div class="overlay" id="update-modal" style="display:none">
+  <div class="modal">
+    <div class="modal-head"><h3 id="um-title">Post Update</h3><button class="close-btn" onclick="closeUpdateModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="field"><label>Current Phase</label>
+        <select id="u-phase"><option>Development</option><option>SIT</option><option>UAT</option><option>PENTEST</option><option>CCB</option><option>Pilot</option><option>Live</option></select>
+      </div>
+      <div class="field"><label>Progress (%)</label><input id="u-progress" type="number" min="0" max="100"/></div>
+      <div class="field"><label>Update Note *</label><textarea id="u-note" placeholder="Describe what has changed…"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeUpdateModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitUpdate()">Post Update</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="overlay" id="detail-modal" style="display:none">
+  <div class="modal" style="max-width:620px">
+    <div class="modal-head"><h3 id="dm-title">Project Detail</h3><button class="close-btn" onclick="closeDetailModal()">✕</button></div>
+    <div class="modal-body" id="dm-body"></div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script type="module">
+import { initializeApp }                          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, onValue, get }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+// ── CHECK CONFIG ──
+const configured = FIREBASE_CONFIG.apiKey !== "PASTE_YOUR_apiKey_HERE";
+
+const PHASES=['Development','SIT','UAT','PENTEST','CCB','Pilot','Live'];
+const PCLS={Development:'phase-dev',SIT:'phase-sit',UAT:'phase-uat',PENTEST:'phase-pentest',CCB:'phase-ccb',Pilot:'phase-pilot',Live:'phase-live'};
+const PCOL={'Mobile App':'#3b82f6','Internet Banking':'#6366f1','Leo':'#a855f7','POS':'#06b6d4','Web Team':'#22c55e','Cards':'#f97316','USSD':'#eab308'};
+const DB_PATH = 'digitalops/projects';
+
+const pc=p=>p>=80?'#22c55e':p>=50?'#3b82f6':p>=25?'#eab308':'#ef4444';
+
+let db=null, role='pm', currentPage='projects', updateId=null, editId=null;
+let projects=[], fProd='all', fPhase='all', fSearch='', hdProd='all', hdPhase='all';
+
+// ── INIT FIREBASE ──
+function initFirebase(){
+  try{
+    const app = initializeApp(FIREBASE_CONFIG);
+    db = getDatabase(app);
+    return true;
+  }catch(e){ return false; }
+}
+
+// ── REAL-TIME LISTENER ──
+function listenToProjects(){
+  const dbRef = ref(db, DB_PATH);
+  onValue(dbRef, snapshot => {
+    const data = snapshot.val();
+    if(data){
+      projects = Object.values(data).sort((a,b)=>a.id-b.id);
+    } else {
+      // First time — seed default data
+      projects = seedData();
+      pushToFirebase();
+    }
+    document.getElementById('sync-label').textContent = 'Live ✓';
+    document.getElementById('sync-dot').className = 'sync-dot';
+    hideLoading();
+    renderContent();
+  }, err => {
+    console.error(err);
+    document.getElementById('sync-label').textContent = 'Error';
+    document.getElementById('loading-msg').textContent = '❌ Firebase connection failed. Check your config.';
+  });
+}
+
+async function pushToFirebase(){
+  if(!db) return false;
+  setSyncing(true);
+  try{
+    const obj={};
+    projects.forEach(p=>{ obj[p.id]=p; });
+    await set(ref(db, DB_PATH), obj);
+    setSyncing(false);
+    return true;
+  }catch(e){
+    setSyncing(false);
+    toast('Firebase write failed: '+e.message,'error');
+    return false;
+  }
+}
+
+function setSyncing(on){
+  const d=document.getElementById('sync-dot');
+  const l=document.getElementById('sync-label');
+  if(!d)return;
+  d.className='sync-dot'+(on?' syncing':'');
+  l.textContent=on?'Saving…':'Live ✓';
+}
+
+function hideLoading(){
+  document.getElementById('loading-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+}
+
+// ── SEED DATA ──
+function seedData(){
+  return [
+    {id:1,name:'Card Tokenization',product:'Cards',ba:'Emeka Okafor',pm:'Ngozi Adeyemi',phase:'UAT',progress:65,start:'2025-02-01',target:'2025-06-30',logs:[{date:'2025-05-20',note:'UAT test cases completed, 3 defects raised'},{date:'2025-04-15',note:'SIT passed with minor issues resolved'}]},
+    {id:2,name:'Leo AI Upgrade',product:'Leo',ba:'Chinwe Eze',pm:'Tunde Balogun',phase:'SIT',progress:40,start:'2025-03-01',target:'2025-08-15',logs:[{date:'2025-05-18',note:'Integration testing for NLP module started'}]},
+    {id:3,name:'USSD Menu Revamp',product:'USSD',ba:'Amara Nwosu',pm:'Sola Adeleke',phase:'Development',progress:25,start:'2025-04-01',target:'2025-09-30',logs:[{date:'2025-05-10',note:'Backend menu tree finalized'}]},
+    {id:4,name:'Mobile Biometric Login',product:'Mobile App',ba:'Chidi Obi',pm:'Ngozi Adeyemi',phase:'PENTEST',progress:78,start:'2025-01-15',target:'2025-06-15',logs:[{date:'2025-05-22',note:'Penetration test by vendor initiated'},{date:'2025-05-01',note:'UAT sign-off received'}]},
+    {id:5,name:'Internet Banking Redesign',product:'Internet Banking',ba:'Funke Akinlade',pm:'Yemi Coker',phase:'Pilot',progress:88,start:'2024-11-01',target:'2025-06-01',logs:[{date:'2025-05-23',note:'Pilot with 500 users, feedback positive'}]},
+    {id:6,name:'POS Offline Mode',product:'POS',ba:'Ikenna Madu',pm:'Tunde Balogun',phase:'CCB',progress:82,start:'2025-01-10',target:'2025-07-01',logs:[{date:'2025-05-21',note:'CCB approved, awaiting live scheduling'}]},
+    {id:7,name:'Web Dashboard Analytics',product:'Web Team',ba:'Seun Oluwole',pm:'Yemi Coker',phase:'Live',progress:100,start:'2024-09-01',target:'2025-03-01',logs:[{date:'2025-03-05',note:'Successfully deployed. Monitoring active'}]},
+    {id:8,name:'QR Code Payments',product:'Mobile App',ba:'Blessing Odo',pm:'Sola Adeleke',phase:'Development',progress:15,start:'2025-05-01',target:'2025-11-30',logs:[{date:'2025-05-19',note:'Architecture design document shared'}]},
+  ];
+}
+
+// ── NAV ──
+function renderNav(){
+  const items=role==='pm'
+    ?[{id:'projects',icon:'📋',label:'All Projects'},{id:'add',icon:'➕',label:'Add Project'}]
+    :[{id:'dashboard',icon:'📊',label:'Dashboard'},{id:'projects',icon:'📋',label:'All Projects'}];
+  document.getElementById('nav').innerHTML=items.map(i=>
+    `<div class="nav-item ${currentPage===i.id?'active':''}" onclick="window._nav('${i.id}')">${i.icon} ${i.label}</div>`
+  ).join('');
+}
+
+window._nav=function(p){
+  if(p==='add'){currentPage='projects';renderNav();openAddModal();return;}
+  currentPage=p;renderNav();renderContent();
+};
+
+window.setRole=function(r){
+  role=r;currentPage=r==='hd'?'dashboard':'projects';
+  document.getElementById('btn-pm').className='role-btn'+(r==='pm'?' active-role':'');
+  document.getElementById('btn-hd').className='role-btn'+(r==='hd'?' active-role':'');
+  document.getElementById('avatar-init').textContent=r==='hd'?'HD':'PM';
+  document.getElementById('page-sub').textContent=r==='hd'?'Head of Digital Banking':'Product Manager View';
+  renderNav();renderContent();
+};
+
+function renderContent(){
+  if(currentPage==='dashboard'&&role==='hd'){renderHD();return;}
+  renderTable();
+}
+
+// ── TABLE ──
+function renderTable(){
+  document.getElementById('page-title').textContent='All Projects';
+  const f=projects.filter(p=>{
+    if(fProd!=='all'&&p.product!==fProd)return false;
+    if(fPhase!=='all'&&p.phase!==fPhase)return false;
+    if(fSearch&&!p.name.toLowerCase().includes(fSearch.toLowerCase())&&!p.ba.toLowerCase().includes(fSearch.toLowerCase()))return false;
+    return true;
+  });
+  const live=projects.filter(p=>p.phase==='Live').length;
+  const avg=Math.round(projects.reduce((a,p)=>a+p.progress,0)/(projects.length||1));
+  document.getElementById('content').innerHTML=`
+    ${!configured?`<div class="setup-banner">⚠️ <b>Firebase not configured yet.</b> This is running in demo mode (data won't sync across devices). Follow the setup guide below the app to connect Firebase for real-time sync.</div>`:''}
+    <div class="stats">
+      <div class="stat-card"><div class="label">Total Projects</div><div class="value" style="color:var(--accent)">${projects.length}</div><div class="sub">All products</div></div>
+      <div class="stat-card"><div class="label">In Progress</div><div class="value" style="color:var(--yellow)">${projects.length-live}</div><div class="sub">Active phases</div></div>
+      <div class="stat-card"><div class="label">Live</div><div class="value" style="color:var(--green)">${live}</div><div class="sub">Deployed</div></div>
+      <div class="stat-card"><div class="label">Avg Progress</div><div class="value" style="color:${pc(avg)}">${avg}%</div><div class="sub">Overall</div></div>
+    </div>
+    <div class="filters">
+      <input class="filter-input" placeholder="🔍  Search project or BA…" value="${fSearch}" oninput="fSearch=this.value;window._rt()"/>
+      <select class="filter-select" onchange="fProd=this.value;window._rt()">
+        <option value="all">All Products</option>
+        ${Object.keys(PCOL).map(p=>`<option value="${p}" ${fProd===p?'selected':''}>${p}</option>`).join('')}
+      </select>
+      <select class="filter-select" onchange="fPhase=this.value;window._rt()">
+        <option value="all">All Phases</option>
+        ${PHASES.map(ph=>`<option value="${ph}" ${fPhase===ph?'selected':''}>${ph}</option>`).join('')}
+      </select>
+      ${role==='pm'?`<button class="btn btn-primary" onclick="openAddModal()">+ New Project</button>`:''}
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>Project Name</th><th>Product</th><th>Business Analyst</th><th>Product Manager</th><th>Phase</th><th>Progress</th><th>Target</th><th>Actions</th></tr></thead>
+      <tbody>${f.length===0
+        ?`<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--muted)">No projects match filters</td></tr>`
+        :f.map(p=>`<tr onclick="openDetail(${p.id})">
+          <td style="color:var(--muted)">${p.id}</td>
+          <td style="font-weight:600">${p.name}</td>
+          <td><span class="product-tag" style="background:${PCOL[p.product]}22;color:${PCOL[p.product]};border:1px solid ${PCOL[p.product]}44">${p.product}</span></td>
+          <td>${p.ba}</td><td>${p.pm}</td>
+          <td><span class="phase ${PCLS[p.phase]}">${p.phase}</span></td>
+          <td><div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:${p.progress}%;background:${pc(p.progress)}"></div></div><span class="prog-label">${p.progress}%</span></div></td>
+          <td style="color:var(--muted);font-size:12px">${p.target||'—'}</td>
+          <td onclick="event.stopPropagation()">${role==='pm'
+            ?`<button class="btn btn-ghost btn-sm" onclick="openUpdateModal(${p.id})">Update</button> <button class="btn btn-ghost btn-sm" onclick="openEditModal(${p.id})">Edit</button>`
+            :'—'}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>`;
+  window._rt=renderTable;
+}
+
+// ── HEAD DASHBOARD ──
+function renderHD(){
+  document.getElementById('page-title').textContent='Head of Digital – Live Dashboard';
+  const byPhase={};PHASES.forEach(ph=>byPhase[ph]=projects.filter(p=>p.phase===ph).length);
+  const f=projects.filter(p=>{
+    if(hdProd!=='all'&&p.product!==hdProd)return false;
+    if(hdPhase!=='all'&&p.phase!==hdPhase)return false;
+    return true;
+  });
+  document.getElementById('content').innerHTML=`
+    <div class="stats" style="margin-bottom:20px">
+      ${PHASES.map(ph=>`<div class="stat-card" style="border-color:${byPhase[ph]>0?'var(--accent)':'var(--border)'}">
+        <div class="label">${ph}</div>
+        <div class="value" style="font-size:22px;color:${byPhase[ph]>0?'var(--accent)':'var(--muted)'}">${byPhase[ph]}</div>
+        <div class="sub">project${byPhase[ph]!==1?'s':''}</div>
+      </div>`).join('')}
+    </div>
+    <div class="filters" style="margin-bottom:20px">
+      <select class="filter-select" onchange="hdProd=this.value;window._rhd()">
+        <option value="all">All Products</option>
+        ${Object.keys(PCOL).map(p=>`<option value="${p}" ${hdProd===p?'selected':''}>${p}</option>`).join('')}
+      </select>
+      <select class="filter-select" onchange="hdPhase=this.value;window._rhd()">
+        <option value="all">All Phases</option>
+        ${PHASES.map(ph=>`<option value="${ph}" ${hdPhase===ph?'selected':''}>${ph}</option>`).join('')}
+      </select>
+    </div>
+    <div class="hd-grid">
+      ${f.map(p=>{
+        const pi=PHASES.indexOf(p.phase),ll=p.logs&&p.logs.length?p.logs[p.logs.length-1]:null;
+        return `<div class="hd-card" onclick="openDetail(${p.id})" style="border-color:${p.phase==='Live'?'rgba(34,197,94,.3)':p.progress>=75?'rgba(59,130,246,.3)':'var(--border)'}">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+            <div>
+              <div style="font-size:14px;font-weight:700">${p.name}</div>
+              <div style="margin-top:3px"><span class="product-tag" style="background:${PCOL[p.product]}22;color:${PCOL[p.product]};border:1px solid ${PCOL[p.product]}44">${p.product}</span></div>
+            </div>
+            <span class="phase ${PCLS[p.phase]}">${p.phase}</span>
+          </div>
+          <div class="hd-big-prog"><div class="prog-bar"><div class="prog-fill" style="width:${p.progress}%;background:${pc(p.progress)}"></div></div></div>
+          <div class="hd-meta">
+            <span style="color:${pc(p.progress)};font-weight:700">${p.progress}% complete</span>
+            <span>Target: ${p.target||'TBD'}</span>
+          </div>
+          <div style="margin-top:10px;font-size:11px;color:var(--muted)">BA: <b style="color:var(--text)">${p.ba}</b> &nbsp;|&nbsp; PM: <b style="color:var(--text)">${p.pm}</b></div>
+          ${ll?`<div style="margin-top:10px;background:var(--surface);border-radius:7px;padding:9px 11px;font-size:11px;color:var(--muted)">
+            <span style="font-weight:600;color:var(--accent)">Latest:</span> ${ll.note} <span style="float:right">${ll.date}</span>
+          </div>`:''}
+          <div class="phase-stepper" style="margin-top:12px">
+            ${PHASES.map((ph,i)=>{const done=i<pi,cur=i===pi;return `${i>0?`<div class="phase-connector ${done||cur?'done':''}"></div>`:''}
+            <div class="phase-step ${done?'done':cur?'current':''}"><div class="dot">${done?'✓':i+1}</div><div class="sname">${ph}</div></div>`;}).join('')}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  window._rhd=renderHD;
+}
+
+// ── DETAIL ──
+window.openDetail=function(id){
+  const p=projects.find(x=>x.id===id);if(!p)return;
+  const pi=PHASES.indexOf(p.phase);
+  document.getElementById('dm-title').textContent=p.name;
+  const logs=p.logs||[];
+  document.getElementById('dm-body').innerHTML=`
+    <div class="detail-grid">
+      <div class="detail-item"><div class="dk">Product</div><div class="dv"><span class="product-tag" style="background:${PCOL[p.product]}22;color:${PCOL[p.product]}">${p.product}</span></div></div>
+      <div class="detail-item"><div class="dk">Phase</div><div class="dv"><span class="phase ${PCLS[p.phase]}">${p.phase}</span></div></div>
+      <div class="detail-item"><div class="dk">Business Analyst</div><div class="dv">${p.ba}</div></div>
+      <div class="detail-item"><div class="dk">Product Manager</div><div class="dv">${p.pm}</div></div>
+      <div class="detail-item"><div class="dk">Start Date</div><div class="dv">${p.start||'—'}</div></div>
+      <div class="detail-item"><div class="dk">Target Go-Live</div><div class="dv">${p.target||'—'}</div></div>
+    </div>
+    <div style="margin-bottom:6px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Overall Progress</div>
+    <div class="prog-wrap" style="margin-bottom:16px">
+      <div class="prog-bar" style="flex:1"><div class="prog-fill" style="width:${p.progress}%;background:${pc(p.progress)}"></div></div>
+      <span style="font-size:15px;font-weight:700;color:${pc(p.progress)}">${p.progress}%</span>
+    </div>
+    <div style="margin-bottom:6px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Phase Journey</div>
+    <div class="phase-stepper">
+      ${PHASES.map((ph,i)=>{const done=i<pi,cur=i===pi;return `${i>0?`<div class="phase-connector ${done||cur?'done':''}"></div>`:''}
+      <div class="phase-step ${done?'done':cur?'current':''}"><div class="dot">${done?'✓':i+1}</div><div class="sname">${ph}</div></div>`;}).join('')}
+    </div>
+    <div style="margin:16px 0 8px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Update Log (${logs.length})</div>
+    <div class="update-log">
+      ${logs.length===0?`<div style="color:var(--muted);font-size:12px;padding:8px">No updates yet.</div>`
+        :[...logs].reverse().map(l=>`<div class="log-item"><div class="log-meta">${l.date}</div>${l.note}</div>`).join('')}
+    </div>`;
+  document.getElementById('detail-modal').style.display='flex';
+};
+window.closeDetailModal=function(){document.getElementById('detail-modal').style.display='none';};
+
+// ── ADD / EDIT ──
+window.openAddModal=function(){
+  editId=null;
+  document.getElementById('modal-title').textContent='Add New Project';
+  ['f-name','f-ba','f-pm-name','f-update'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('f-progress').value='0';
+  document.getElementById('f-start').value='';
+  document.getElementById('f-target').value='';
+  document.getElementById('modal').style.display='flex';
+};
+window.openEditModal=function(id){
+  const p=projects.find(x=>x.id===id);if(!p)return;
+  editId=id;
+  document.getElementById('modal-title').textContent='Edit Project';
+  document.getElementById('f-name').value=p.name;
+  document.getElementById('f-ba').value=p.ba;
+  document.getElementById('f-pm-name').value=p.pm;
+  document.getElementById('f-product').value=p.product;
+  document.getElementById('f-phase').value=p.phase;
+  document.getElementById('f-progress').value=p.progress;
+  document.getElementById('f-start').value=p.start||'';
+  document.getElementById('f-target').value=p.target||'';
+  document.getElementById('f-update').value='';
+  document.getElementById('modal').style.display='flex';
+};
+window.closeModal=function(){document.getElementById('modal').style.display='none';};
+
+window.saveProject=async function(){
+  const name=document.getElementById('f-name').value.trim();
+  const ba=document.getElementById('f-ba').value.trim();
+  const pm=document.getElementById('f-pm-name').value.trim();
+  if(!name||!ba||!pm){toast('Please fill in Project Name, BA, and PM','error');return;}
+  const note=document.getElementById('f-update').value.trim();
+  if(editId){
+    const p=projects.find(x=>x.id===editId);
+    Object.assign(p,{name,ba,pm,product:document.getElementById('f-product').value,phase:document.getElementById('f-phase').value,progress:parseInt(document.getElementById('f-progress').value)||0,start:document.getElementById('f-start').value,target:document.getElementById('f-target').value});
+    if(note){if(!p.logs)p.logs=[];p.logs.push({date:td(),note});}
+  }else{
+    const maxId=projects.reduce((m,p)=>Math.max(m,p.id),0);
+    projects.push({id:maxId+1,name,ba,pm,product:document.getElementById('f-product').value,phase:document.getElementById('f-phase').value,progress:parseInt(document.getElementById('f-progress').value)||0,start:document.getElementById('f-start').value,target:document.getElementById('f-target').value,logs:note?[{date:td(),note}]:[]});
+  }
+  const ok=await pushToFirebase();
+  if(ok){closeModal();toast(editId?'✅ Project updated — synced live!':'✅ Project added — visible to all!','success');}
+};
+
+// ── UPDATE ──
+window.openUpdateModal=function(id){
+  updateId=id;
+  const p=projects.find(x=>x.id===id);
+  document.getElementById('um-title').textContent='Update: '+p.name;
+  document.getElementById('u-phase').value=p.phase;
+  document.getElementById('u-progress').value=p.progress;
+  document.getElementById('u-note').value='';
+  document.getElementById('update-modal').style.display='flex';
+};
+window.closeUpdateModal=function(){document.getElementById('update-modal').style.display='none';};
+window.submitUpdate=async function(){
+  const note=document.getElementById('u-note').value.trim();
+  if(!note){toast('Please enter an update note','error');return;}
+  const p=projects.find(x=>x.id===updateId);
+  p.phase=document.getElementById('u-phase').value;
+  p.progress=parseInt(document.getElementById('u-progress').value)||p.progress;
+  if(!p.logs)p.logs=[];
+  p.logs.push({date:td(),note});
+  const ok=await pushToFirebase();
+  if(ok){closeUpdateModal();toast('✅ Update saved — Head of Digital sees this instantly!','success');}
+};
+
+function td(){return new Date().toISOString().slice(0,10);}
+function toast(msg,type='success'){
+  const t=document.createElement('div');
+  t.className=`toast toast-${type}`;t.textContent=msg;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),3500);
+}
+
+// ── BOOT ──
+if(configured){
+  if(initFirebase()){
+    renderNav();
+    listenToProjects(); // real-time listener — auto-updates all open browsers instantly
+  } else {
+    document.getElementById('loading-msg').textContent='❌ Firebase init failed. Check your config values.';
+  }
+} else {
+  // Demo mode — no Firebase config yet
+  projects = seedData();
+  hideLoading();
+  renderNav();
+  renderContent();
+}
+
+</script>
+</body>
+</html>
