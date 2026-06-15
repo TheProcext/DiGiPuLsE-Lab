@@ -790,26 +790,18 @@ function saveToFirebase() {
   setSyncing(true);
 
   function doSave() {
-    var obj = {};
-    projects.forEach(function(p){ obj[p.id] = p; });
-    db.ref(DB_PATH).set(obj)
-      .then(function(){ setSyncing(false); })
-      .catch(function(e){
+    // Write each project individually to its own path.
+    // This matches the Firebase rule: $projectId level write permission.
+    var updates = {};
+    projects.forEach(function(p) {
+      updates['uba-digitalops/projects/' + p.id] = p;
+    });
+    db.ref().update(updates)
+      .then(function() { setSyncing(false); })
+      .catch(function(e) {
         setSyncing(false);
-        // If permission denied, try re-authenticating then save again
-        if (e.code === 'PERMISSION_DENIED' || (e.message && e.message.indexOf('PERMISSION_DENIED') > -1)) {
-          firebase.auth().signInAnonymously()
-            .then(function(result){
-              authUser = result.user;
-              var obj2 = {};
-              projects.forEach(function(p){ obj2[p.id] = p; });
-              return db.ref(DB_PATH).set(obj2);
-            })
-            .then(function(){ setSyncing(false); toast('✅ Saved successfully', 'success'); })
-            .catch(function(){ setSyncing(false); toast('Save failed. Check Firebase rules.', 'error'); });
-        } else {
-          toast('Save error: ' + e.message, 'error');
-        }
+        toast('Save error: ' + e.message, 'error');
+        console.error('Firebase save error:', e);
       });
   }
 
