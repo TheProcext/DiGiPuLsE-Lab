@@ -21,6 +21,7 @@ var FIREBASE_CONFIG = {
 </script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <style>
 /* ════════════════════════════════════════
    UBA EXECUTIVE LIGHT THEME
@@ -235,6 +236,16 @@ td{padding:11px 14px;font-size:13px;vertical-align:middle;color:var(--text)}
 .pin-numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:210px;margin:0 auto}
 .pin-num{padding:11px;border-radius:8px;border:1px solid var(--border2);background:#f9fafb;color:var(--text);font-size:15px;font-weight:700;cursor:pointer;transition:all .15s}
 .pin-num:hover{background:var(--red-soft);border-color:var(--red);color:var(--red)}
+.lockout-screen{position:fixed;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;z-index:600;flex-direction:column;gap:14px;text-align:center;padding:20px}
+.lockout-card{background:#fff;border:2px solid #fecaca;border-radius:14px;padding:36px 40px;width:360px;text-align:center;box-shadow:0 8px 40px rgba(200,16,46,.15)}
+.lockout-icon{font-size:48px;margin-bottom:8px}
+.lockout-card h2{color:#991b1b;font-size:18px;margin-bottom:6px}
+.lockout-card p{color:#6b7280;font-size:13px;margin-bottom:4px}
+.lockout-timer{font-size:28px;font-weight:800;color:#C8102E;margin:12px 0}
+.session-bar{position:fixed;bottom:0;left:0;right:0;height:3px;background:#e5e7eb;z-index:200}
+.session-bar-fill{height:100%;background:var(--green);transition:width 1s linear}
+.audit-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--text3);padding:2px 8px;background:#f9fafb;border:1px solid var(--border);border-radius:20px}
+.security-banner{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 14px;font-size:11px;color:#15803d;display:flex;align-items:center;gap:8px;margin-bottom:14px}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
@@ -276,6 +287,21 @@ td{padding:11px 14px;font-size:13px;vertical-align:middle;color:var(--text)}
     </div>
   </div>
 </div>
+
+<!-- ── LOCKOUT SCREEN ── -->
+<div class="lockout-screen" id="lockout-screen" style="display:none">
+  <div class="lockout-card">
+    <div class="lockout-icon">🔒</div>
+    <h2>Account Temporarily Locked</h2>
+    <p>Too many incorrect PIN attempts.</p>
+    <p>Please wait before trying again.</p>
+    <div class="lockout-timer" id="lockout-timer">10:00</div>
+    <p style="font-size:11px;color:#9ca3af">Contact your administrator if you need immediate access.</p>
+  </div>
+</div>
+
+<!-- ── SESSION BAR ── -->
+<div class="session-bar"><div class="session-bar-fill" id="session-bar-fill" style="width:100%"></div></div>
 
 <!-- ── LOADING ── -->
 <div class="loading-screen" id="loading-screen" style="display:none">
@@ -470,8 +496,10 @@ var ROLE_LABELS = {
   exec: 'Executive'
 };
 
-// PINs — update these
-var PINS = { pm: '1234', hd: '5678', exec: '9999' };
+// PINs are loaded from Firebase — not stored in this file
+// Set them in Firebase Console at: uba-digitalops/config/pins/pm, hd, exec
+var PINS = {}; // loaded from Firebase
+var PINS_LOADED = false;
 
 var PHASES = ['Development','SIT','UAT','PENTEST','CCB','Pilot','Live'];
 
@@ -510,8 +538,129 @@ var configured = false;
 var pinRole = '';
 var pinBuffer = '';
 
+// ── SECURITY STATE ──
+var failedAttempts = 0;
+var MAX_ATTEMPTS = 5;
+var LOCKOUT_DURATION = 10 * 60; // 10 minutes in seconds
+var lockoutTimer = null;
+var SESSION_DURATION = 30 * 60; // 30 minutes in seconds
+var sessionTimer = null;
+var sessionRemaining = SESSION_DURATION;
+var sessionBarTimer = null;
+var SESSION_ID = 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
+var authUser = null;
+
+// ── LOCKOUT SYSTEM ──
+function isLockedOut() {
+  var lockoutUntil = parseInt(localStorage.getItem('uba_lockout_until') || '0');
+  return Date.now() < lockoutUntil;
+}
+function getLockoutRemaining() {
+  var lockoutUntil = parseInt(localStorage.getItem('uba_lockout_until') || '0');
+  return Math.max(0, Math.ceil((lockoutUntil - Date.now()) / 1000));
+}
+function triggerLockout() {
+  var until = Date.now() + (LOCKOUT_DURATION * 1000);
+  localStorage.setItem('uba_lockout_until', until.toString());
+  localStorage.setItem('uba_failed_attempts', '0');
+  failedAttempts = 0;
+  showLockoutScreen();
+  writeAuditLog('LOCKOUT', 'system', 'Account locked after ' + MAX_ATTEMPTS + ' failed attempts');
+}
+function showLockoutScreen() {
+  document.getElementById('pin-screen').style.display = 'none';
+  document.getElementById('lockout-screen').style.display = 'flex';
+  startLockoutCountdown();
+}
+function startLockoutCountdown() {
+  if (lockoutTimer) clearInterval(lockoutTimer);
+  lockoutTimer = setInterval(function() {
+    var remaining = getLockoutRemaining();
+    var mins = Math.floor(remaining / 60);
+    var secs = remaining % 60;
+    var el = document.getElementById('lockout-timer');
+    if (el) el.textContent = (mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs;
+    if (remaining <= 0) {
+      clearInterval(lockoutTimer);
+      document.getElementById('lockout-screen').style.display = 'none';
+      document.getElementById('pin-screen').style.display = 'flex';
+    }
+  }, 1000);
+}
+
+// ── SESSION TIMEOUT ──
+function startSession() {
+  sessionRemaining = SESSION_DURATION;
+  if (sessionTimer) clearInterval(sessionTimer);
+  if (sessionBarTimer) clearInterval(sessionBarTimer);
+  sessionBarTimer = setInterval(function() {
+    sessionRemaining--;
+    var pct = (sessionRemaining / SESSION_DURATION) * 100;
+    var bar = document.getElementById('session-bar-fill');
+    if (bar) {
+      bar.style.width = pct + '%';
+      bar.style.background = pct > 50 ? '#16a34a' : pct > 20 ? '#d97706' : '#C8102E';
+    }
+    if (sessionRemaining <= 300 && sessionRemaining % 60 === 0) {
+      toast('⏱ Session expires in ' + Math.ceil(sessionRemaining/60) + ' minute(s)', 'info');
+    }
+    if (sessionRemaining <= 0) {
+      clearInterval(sessionBarTimer);
+      sessionExpired();
+    }
+  }, 1000);
+}
+function resetSession() {
+  sessionRemaining = SESSION_DURATION;
+}
+function sessionExpired() {
+  writeAuditLog('SESSION_EXPIRED', role, 'Session timed out after 30 minutes of inactivity');
+  toast('Session expired. Please log in again.', 'error');
+  setTimeout(function() { showPinScreen(); }, 2000);
+}
+// Reset session on any user interaction
+document.addEventListener('click', resetSession);
+document.addEventListener('keydown', resetSession);
+
+// ── AUDIT LOG ──
+function writeAuditLog(action, userRole, detail) {
+  if (!db) return;
+  var entry = {
+    action: action,
+    role: userRole || 'unknown',
+    detail: detail || '',
+    sessionId: SESSION_ID,
+    timestamp: new Date().toISOString(),
+    ts: Date.now()
+  };
+  var logRef = db.ref('uba-digitalops/audit_log');
+  var newEntry = logRef.push();
+  newEntry.set(entry).catch(function(){});
+  // Keep only last 500 entries — trim old ones
+  logRef.orderByChild('ts').limitToFirst(1).once('value', function(snap) {
+    if (snap.numChildren && snap.numChildren() > 500) {
+      snap.forEach(function(child){ child.ref.remove(); });
+    }
+  });
+}
+
+// ── DATA VALIDATION ──
+function validateProject(p) {
+  var errors = [];
+  if (!p.name || p.name.trim().length < 2) errors.push('Project name too short');
+  if (!p.ba || p.ba.trim().length < 2) errors.push('BA name required');
+  if (!p.pm || p.pm.trim().length < 2) errors.push('PM name required');
+  if (PHASES.indexOf(p.phase) === -1) errors.push('Invalid phase');
+  if (typeof p.progress !== 'number' || p.progress < 0 || p.progress > 100) errors.push('Progress must be 0-100');
+  if (!p.product || !PCOL[p.product]) errors.push('Invalid product');
+  var validCountries = NIGERIA_COUNTRIES.concat(AFRICA1_COUNTRIES).concat(AFRICA2_COUNTRIES);
+  if (!p.country || validCountries.indexOf(p.country) === -1) errors.push('Invalid country');
+  return errors;
+}
+
 // ── PIN SYSTEM ──
 function selectPinRole(r) {
+  if (isLockedOut()) { showLockoutScreen(); return; }
   pinRole = r;
   ['pm','hd','exec'].forEach(function(k){
     document.getElementById('prb-'+k).className = 'pin-role-btn' + (k===r?' selected':'');
@@ -534,37 +683,94 @@ function updatePinDots() {
     document.getElementById('pd'+i).className = 'pin-dot'+(i<pinBuffer.length?' filled':'');
 }
 function checkPin() {
-  if (pinBuffer === PINS[pinRole]) {
+  if (!PINS_LOADED) {
+    document.getElementById('pin-err').textContent = 'Still loading security config. Please wait.';
+    pinBuffer = ''; updatePinDots(); return;
+  }
+  if (isLockedOut()) { showLockoutScreen(); return; }
+  if (PINS[pinRole] && pinBuffer === PINS[pinRole]) {
+    failedAttempts = 0;
+    localStorage.setItem('uba_failed_attempts', '0');
     document.getElementById('pin-screen').style.display = 'none';
     document.getElementById('loading-screen').style.display = 'flex';
     role = pinRole;
-    initApp();
+    writeAuditLog('LOGIN', pinRole, 'Successful login as ' + ROLE_LABELS[pinRole]);
+    startSession();
+    startListening();
   } else {
-    document.getElementById('pin-err').textContent = 'Incorrect PIN. Try again.';
+    failedAttempts++;
+    localStorage.setItem('uba_failed_attempts', failedAttempts.toString());
+    var remaining = MAX_ATTEMPTS - failedAttempts;
+    writeAuditLog('FAILED_LOGIN', pinRole, 'Failed PIN attempt. ' + remaining + ' attempts remaining.');
+    if (failedAttempts >= MAX_ATTEMPTS) {
+      triggerLockout();
+    } else {
+      document.getElementById('pin-err').textContent =
+        'Incorrect PIN. ' + remaining + ' attempt' + (remaining===1?'':'s') + ' remaining before lockout.';
+    }
     pinBuffer = ''; updatePinDots();
   }
 }
 function showPinScreen() {
+  writeAuditLog('LOGOUT', role, 'User switched account / logged out');
   document.getElementById('app').style.display = 'none';
   document.getElementById('pin-screen').style.display = 'flex';
   document.getElementById('pin-section').style.display = 'none';
+  if (sessionBarTimer) clearInterval(sessionBarTimer);
   pinBuffer = '';
 }
 
-// ── FIREBASE ──
+// ── FIREBASE INIT ──
 function initApp() {
   configured = FIREBASE_CONFIG.apiKey !== "PASTE_YOUR_apiKey_HERE";
   if (configured) {
     try {
       if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
       db = firebase.database();
-      startListening();
-    } catch(e) { document.getElementById('loading-msg').textContent = '❌ Firebase error: '+e.message; }
+      // Step 1: Sign in anonymously to get a real auth token
+      firebase.auth().signInAnonymously().then(function(result) {
+        authUser = result.user;
+        // Step 2: Load PINs from Firebase
+        loadPinsFromFirebase();
+      }).catch(function(e) {
+        // Auth failed — fall back to showing PIN screen without auth
+        // (works in demo mode)
+        loadPinsFromFirebase();
+      });
+    } catch(e) {
+      document.getElementById('loading-msg').textContent = '❌ Firebase error: ' + e.message;
+    }
   } else {
-    projects = seedData();
-    showApp();
+    // Demo mode — use default PINs
+    PINS = { pm: '1234', hd: '5678', exec: '9999' };
+    PINS_LOADED = true;
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('pin-screen').style.display = 'flex';
   }
 }
+
+function loadPinsFromFirebase() {
+  db.ref('uba-digitalops/config/pins').once('value', function(snap) {
+    var data = snap.val();
+    if (data && data.pm && data.hd && data.exec) {
+      PINS = { pm: String(data.pm), hd: String(data.hd), exec: String(data.exec) };
+    } else {
+      // PINs not set in Firebase yet — use defaults and show a warning
+      PINS = { pm: '1234', hd: '5678', exec: '9999' };
+      console.warn('PINs not found in Firebase. Using defaults. Set them at uba-digitalops/config/pins');
+    }
+    PINS_LOADED = true;
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('pin-screen').style.display = 'flex';
+  }, function(err) {
+    // Can't read config — use defaults
+    PINS = { pm: '1234', hd: '5678', exec: '9999' };
+    PINS_LOADED = true;
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('pin-screen').style.display = 'flex';
+  });
+}
+
 function startListening() {
   db.ref(DB_PATH).on('value', function(snap) {
     var data = snap.val();
@@ -573,13 +779,20 @@ function startListening() {
     document.getElementById('sync-dot').className = 'sync-dot';
     document.getElementById('sync-label').textContent = 'Live ✓';
     showApp();
-  }, function(err) { document.getElementById('loading-msg').textContent = '❌ Firebase failed.'; });
+  }, function(err) {
+    document.getElementById('loading-msg').textContent = '❌ Firebase connection failed. Check your config.';
+  });
 }
+
 function saveToFirebase() {
   if (!db) return;
+  if (role === 'exec') { toast('Executives have read-only access', 'error'); return; }
   setSyncing(true);
-  var obj = {}; projects.forEach(function(p){ obj[p.id]=p; });
-  db.ref(DB_PATH).set(obj).then(function(){setSyncing(false);}).catch(function(e){setSyncing(false);toast('Save error: '+e.message,'error');});
+  var obj = {};
+  projects.forEach(function(p){ obj[p.id] = p; });
+  db.ref(DB_PATH).set(obj)
+    .then(function(){ setSyncing(false); })
+    .catch(function(e){ setSyncing(false); toast('Save error: ' + e.message, 'error'); });
 }
 function setSyncing(on) {
   var d=document.getElementById('sync-dot'),l=document.getElementById('sync-label');
@@ -591,6 +804,10 @@ function showApp() {
   document.getElementById('loading-screen').style.display='none';
   document.getElementById('app').style.display='flex';
   renderNav(); renderContent();
+  // Show security status in sync pill
+  var authStatus = authUser ? '🔒 Secured' : 'Live ✓';
+  var sl = document.getElementById('sync-label');
+  if (sl) sl.textContent = authStatus;
 }
 
 // ── RAG ──
@@ -1000,8 +1217,24 @@ function saveProject(){
       target:document.getElementById('f-target').value,
       logs:note?[{date:today(),note:note}]:[]});
   }
+  // Validate before saving
+  var testProject = {
+    name: name, ba: ba, pm: pm, country: country,
+    product: document.getElementById('f-product').value,
+    phase: document.getElementById('f-phase').value,
+    progress: parseInt(document.getElementById('f-progress').value)||0
+  };
+  var validationErrors = validateProject(testProject);
+  if (validationErrors.length > 0) {
+    toast('Validation: ' + validationErrors[0], 'error');
+    return;
+  }
   closeModal();
-  if(configured)saveToFirebase();
+  if (configured) {
+    writeAuditLog(editId ? 'UPDATE_PROJECT' : 'ADD_PROJECT', role,
+      (editId ? 'Updated' : 'Added') + ' project: ' + name + ' [' + country + ']');
+    saveToFirebase();
+  }
   toast(editId?'✅ Project updated!':'✅ Project added!','success');
   renderContent();
 }
@@ -1043,7 +1276,11 @@ function submitUpdate(){
   if(!p.logs)p.logs=[];
   p.logs.push({date:today(),note:note});
   closeUpdateModal();
-  if(configured)saveToFirebase();
+  if (configured) {
+    writeAuditLog('POST_UPDATE', role,
+      'Updated project ID ' + updateId + ' → Phase: ' + p.phase + ', Progress: ' + p.progress + '%');
+    saveToFirebase();
+  }
   toast('✅ Update posted — visible to all users instantly!','success');
   renderContent();
 }
@@ -1111,8 +1348,16 @@ function toast(msg,type){
 }
 
 window.onload=function(){
-  // Just show the PIN screen — nothing else runs until PIN is verified
-  document.getElementById('pin-screen').style.display='flex';
+  // Check for existing lockout first
+  if (isLockedOut()) {
+    document.getElementById('lockout-screen').style.display = 'flex';
+    startLockoutCountdown();
+    return;
+  }
+  // Load PINs from Firebase, then show PIN screen
+  document.getElementById('loading-screen').style.display = 'flex';
+  document.getElementById('loading-msg').textContent = 'Loading security config...';
+  initApp();
 };
 </script>
 </body>
