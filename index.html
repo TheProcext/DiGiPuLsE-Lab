@@ -249,7 +249,7 @@ td{padding:11px 14px;font-size:13px;vertical-align:middle;color:var(--text)}
     <h2>Digital Banking Ops</h2>
     <p class="pin-sub">United Bank for Africa · Select your role</p>
     <div class="pin-btns">
-      <button class="pin-role-btn" id="prb-pm"   onclick="selectPinRole('pm')">📋<br/>Product Manager</button>
+      <button class="pin-role-btn" id="prb-pm" onclick="selectPinRole('pm')"><span style="font-size:18px">&#128203;</span><br/>Product Manager</button>
       <button class="pin-role-btn" id="prb-hd"   onclick="selectPinRole('hd')">👁️<br/>Head of Digital</button>
       <button class="pin-role-btn" id="prb-exec" onclick="selectPinRole('exec')">🏛️<br/>Executive</button>
     </div>
@@ -575,7 +575,7 @@ function renderNav() {
   var items = role==='pm'?pmItems:role==='exec'?execItems:hdItems;
   document.getElementById('nav').innerHTML = '<div class="nav-section">Navigation</div>'
     + items.map(function(i){
-        return '<div class="nav-item '+(currentPage===i.id?'active':'')+'" onclick="navigate(&quot;'+i.id+'&quot;)">'+i.icon+' '+i.label+'</div>';
+        return '<div class="nav-item '+(currentPage===i.id?'active':'')+'" data-id="'+i.id+'" onclick="navigate(this.dataset.id)">'+i.icon+' '+i.label+'</div>';
       }).join('');
   ['pm','hd','exec'].forEach(function(r2){
     document.getElementById('btn-'+r2).className='role-btn'+(role===r2?' active-role':'');
@@ -606,6 +606,20 @@ function buildCountryOpts(selected, allLabel) {
   html += '</optgroup>';
   return html;
 }
+
+
+// ── FILTER HELPER FUNCTIONS (avoids string-in-string quote issues) ──
+function setRegionFilter(v){ fRegion=v; fCountry='all'; renderTable(); }
+function setHDRegionFilter(v){ hdRegion=v; hdCountry='all'; renderHD(); }
+function setFCountry(v){ fCountry=v; renderTable(); }
+function setHDCountry(v){ hdCountry=v; renderHD(); }
+function setFProd(v){ fProd=v; renderTable(); }
+function setFPhase(v){ fPhase=v; renderTable(); }
+function setFRAG(v){ fRAG=v; renderTable(); }
+function setHDProd(v){ hdProd=v; renderHD(); }
+function setHDPhase(v){ hdPhase=v; renderHD(); }
+function setHDRAG(v){ hdRAG=v; renderHD(); }
+function setFSearch(v){ fSearch=v; renderTable(); }
 
 // ── TABLE VIEW ──
 function renderTable() {
@@ -666,10 +680,10 @@ function renderTable() {
 
     // ── FILTER ROW 1: Search + Product + Phase + RAG
     +'<div class="filters">'
-    +'<input class="filter-input" placeholder="🔍  Search project, BA, or PM…" value="'+fSearch+'" oninput="fSearch=this.value;renderTable()"/>'
-    +'<select class="filter-select" onchange="fProd=this.value;renderTable()"><option value="all">All Products</option>'+prodOpts+'</select>'
-    +'<select class="filter-select" onchange="fPhase=this.value;renderTable()"><option value="all">All Phases</option>'+phaseOpts+'</select>'
-    +'<select class="filter-select" onchange="fRAG=this.value;renderTable()"><option value="all">All RAG</option><option value="G"'+(fRAG==='G'?' selected':'')+'>🟢 On Track</option><option value="A"'+(fRAG==='A'?' selected':'')+'>🟡 At Risk</option><option value="R"'+(fRAG==='R'?' selected':'')+'>🔴 Off Track</option></select>'
+    +'<input class="filter-input" placeholder="🔍  Search project, BA, or PM…" value="'+fSearch+'" oninput="setFSearch(this.value)"/>'
+    +'<select class="filter-select" onchange="setFProd(this.value)"><option value="all">All Products</option>'+prodOpts+'</select>'
+    +'<select class="filter-select" onchange="setFPhase(this.value)"><option value="all">All Phases</option>'+phaseOpts+'</select>'
+    +'<select class="filter-select" onchange="setFRAG(this.value)"><option value="all">All RAG</option><option value="G"'+(fRAG==='G'?' selected':'')+'>🟢 On Track</option><option value="A"'+(fRAG==='A'?' selected':'')+'>🟡 At Risk</option><option value="R"'+(fRAG==='R'?' selected':'')+'>🔴 Off Track</option></select>'
     +(role==='pm'?'<button class="btn btn-red" onclick="openAddModal()">＋ New Project</button>':'')
     +(role!=='pm'?'<button class="btn btn-ghost" onclick="exportPDF()">📄 Export PDF</button>':'')
     +'</div>'
@@ -677,13 +691,13 @@ function renderTable() {
     // ── FILTER ROW 2: Regional structure
     +'<div class="filter-group" style="margin-bottom:14px">'
     +'<span class="filter-group-label">🌍 Filter by Region / Country</span>'
-    +'<select class="filter-select" onchange="fRegion=this.value;fCountry='all';renderTable()">'
+    +'<select class="filter-select" onchange="setRegionFilter(this.value)">'
     +'<option value="all"'+(fRegion==='all'?' selected':'')+'>All Regions</option>'
     +'<option value="Nigeria"'+(fRegion==='Nigeria'?' selected':'')+'>Nigeria</option>'
     +'<option value="Africa 1"'+(fRegion==='Africa 1'?' selected':'')+'>Africa 1</option>'
     +'<option value="Africa 2"'+(fRegion==='Africa 2'?' selected':'')+'>Africa 2</option>'
     +'</select>'
-    +'<select class="filter-select" onchange="fCountry=this.value;renderTable()">'+buildCountryOpts(fCountry,'All Countries')+'</select>'
+    +'<select class="filter-select" onchange="setFCountry(this.value)">'+buildCountryOpts(fCountry,'All Countries')+'</select>'
     +'</div>'
 
     +'<div class="table-wrap"><table>'
@@ -765,20 +779,20 @@ function renderHD() {
     +'</div>';
 
   var filterRow = '<div class="filters" style="margin-bottom:8px">'
-    +'<select class="filter-select" onchange="hdProd=this.value;renderHD()"><option value="all">All Products</option>'+prodOpts+'</select>'
-    +'<select class="filter-select" onchange="hdPhase=this.value;renderHD()"><option value="all">All Phases</option>'+phaseOpts+'</select>'
-    +'<select class="filter-select" onchange="hdRAG=this.value;renderHD()"><option value="all">All RAG</option><option value="G"'+(hdRAG==='G'?' selected':'')+'>🟢 On Track</option><option value="A"'+(hdRAG==='A'?' selected':'')+'>🟡 At Risk</option><option value="R"'+(hdRAG==='R'?' selected':'')+'>🔴 Off Track</option></select>'
+    +'<select class="filter-select" onchange="setHDProd(this.value)"><option value="all">All Products</option>'+prodOpts+'</select>'
+    +'<select class="filter-select" onchange="setHDPhase(this.value)"><option value="all">All Phases</option>'+phaseOpts+'</select>'
+    +'<select class="filter-select" onchange="setHDRAG(this.value)"><option value="all">All RAG</option><option value="G"'+(hdRAG==='G'?' selected':'')+'>🟢 On Track</option><option value="A"'+(hdRAG==='A'?' selected':'')+'>🟡 At Risk</option><option value="R"'+(hdRAG==='R'?' selected':'')+'>🔴 Off Track</option></select>'
     +'<button class="btn btn-ghost" onclick="exportPDF()">📄 Export PDF</button>'
     +'</div>'
     +'<div class="filter-group" style="margin-bottom:16px">'
     +'<span class="filter-group-label">🌍 Region / Country</span>'
-    +'<select class="filter-select" onchange="hdRegion=this.value;hdCountry='all';renderHD()">'
+    +'<select class="filter-select" onchange="setHDRegionFilter(this.value)">'
     +'<option value="all"'+(hdRegion==='all'?' selected':'')+'>All Regions</option>'
     +'<option value="Nigeria"'+(hdRegion==='Nigeria'?' selected':'')+'>Nigeria</option>'
     +'<option value="Africa 1"'+(hdRegion==='Africa 1'?' selected':'')+'>Africa 1</option>'
     +'<option value="Africa 2"'+(hdRegion==='Africa 2'?' selected':'')+'>Africa 2</option>'
     +'</select>'
-    +'<select class="filter-select" onchange="hdCountry=this.value;renderHD()">'+buildCountryOpts(hdCountry,'All Countries')+'</select>'
+    +'<select class="filter-select" onchange="setHDCountry(this.value)">'+buildCountryOpts(hdCountry,'All Countries')+'</select>'
     +'</div>';
 
   var cardsHtml = '';
@@ -1022,7 +1036,10 @@ function toast(msg,type){
   setTimeout(function(){t.remove();},3500);
 }
 
-window.onload=function(){initApp();};
+window.onload=function(){
+  // Just show the PIN screen — nothing else runs until PIN is verified
+  document.getElementById('pin-screen').style.display='flex';
+};
 </script>
 </body>
 </html>
