@@ -379,11 +379,49 @@ td{padding:11px 14px;font-size:13px;vertical-align:middle;color:var(--text)}
   <div class="modal">
     <div class="modal-head"><h3 id="um-title">Post Update</h3><button class="close-btn" onclick="closeUpdateModal()">✕</button></div>
     <div class="modal-body">
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;font-size:12px;color:#15803d;font-weight:600;margin-bottom:2px">
+        💡 Selecting a phase automatically sets the progress percentage. You can adjust it manually if needed.
+      </div>
       <div class="row2">
-        <div class="field"><label>Current Phase</label>
-          <select id="u-phase"><option>Development</option><option>SIT</option><option>UAT</option><option>PENTEST</option><option>CCB</option><option>Pilot</option><option>Live</option></select>
+        <div class="field">
+          <label>Move to Phase</label>
+          <select id="u-phase" onchange="onPhaseChange()">
+            <option>Development</option><option>SIT</option><option>UAT</option>
+            <option>PENTEST</option><option>CCB</option><option>Pilot</option><option>Live</option>
+          </select>
         </div>
-        <div class="field"><label>Progress (%)</label><input id="u-progress" type="number" min="0" max="100"/></div>
+        <div class="field">
+          <label>Progress (%)</label>
+          <div style="position:relative">
+            <input id="u-progress" type="number" min="0" max="100" style="padding-right:36px"/>
+            <span id="u-progress-hint" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text3);font-weight:700;pointer-events:none"></span>
+          </div>
+        </div>
+      </div>
+      <!-- Phase progress visual -->
+      <div id="u-phase-visual" style="background:#f9fafb;border:1px solid var(--border);border-radius:8px;padding:12px 14px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.4px">Phase Progress Breakdown</span>
+          <span id="u-phase-pct" style="font-size:13px;font-weight:800;color:var(--red)">10%</span>
+        </div>
+        <div style="display:flex;gap:2px;height:10px;border-radius:6px;overflow:hidden;margin-bottom:8px">
+          <div id="upp-dev"     style="flex:10;background:#C8102E;opacity:.9;transition:opacity .2s" title="Development 10%"></div>
+          <div id="upp-sit"     style="flex:15;background:#1a56db;opacity:.3;transition:opacity .2s" title="SIT +15%"></div>
+          <div id="upp-uat"     style="flex:15;background:#7c3aed;opacity:.3;transition:opacity .2s" title="UAT +15%"></div>
+          <div id="upp-pentest" style="flex:15;background:#d97706;opacity:.3;transition:opacity .2s" title="PENTEST +15%"></div>
+          <div id="upp-ccb"     style="flex:15;background:#0891b2;opacity:.3;transition:opacity .2s" title="CCB +15%"></div>
+          <div id="upp-pilot"   style="flex:15;background:#059669;opacity:.3;transition:opacity .2s" title="Pilot +15%"></div>
+          <div id="upp-live"    style="flex:15;background:#16a34a;opacity:.3;transition:opacity .2s" title="Live +15%"></div>
+        </div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
+          <span style="font-size:10px;background:#fee2e2;color:#991b1b;padding:2px 7px;border-radius:4px;font-weight:600">Dev 10%</span>
+          <span style="font-size:10px;background:#dbeafe;color:#1e40af;padding:2px 7px;border-radius:4px;font-weight:600">SIT 25%</span>
+          <span style="font-size:10px;background:#ede9fe;color:#5b21b6;padding:2px 7px;border-radius:4px;font-weight:600">UAT 40%</span>
+          <span style="font-size:10px;background:#fef3c7;color:#92400e;padding:2px 7px;border-radius:4px;font-weight:600">PENTEST 55%</span>
+          <span style="font-size:10px;background:#cffafe;color:#155e75;padding:2px 7px;border-radius:4px;font-weight:600">CCB 70%</span>
+          <span style="font-size:10px;background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:4px;font-weight:600">Pilot 85%</span>
+          <span style="font-size:10px;background:#dcfce7;color:#14532d;padding:2px 7px;border-radius:4px;font-weight:600">Live 100%</span>
+        </div>
       </div>
       <div class="field"><label>Update Note *</label><textarea id="u-note" placeholder="Describe what changed or current status…"></textarea></div>
     </div>
@@ -436,6 +474,22 @@ var ROLE_LABELS = {
 var PINS = { pm: '1234', hd: '5678', exec: '9999' };
 
 var PHASES = ['Development','SIT','UAT','PENTEST','CCB','Pilot','Live'];
+
+// Each phase represents a cumulative % of 100 total
+// Development=10%, SIT=25%, UAT=40%, PENTEST=55%, CCB=70%, Pilot=85%, Live=100%
+var PHASE_PROGRESS = {
+  'Development': 10,
+  'SIT':         25,
+  'UAT':         40,
+  'PENTEST':     55,
+  'CCB':         70,
+  'Pilot':       85,
+  'Live':        100
+};
+
+function phaseToProgress(phase) {
+  return PHASE_PROGRESS[phase] || 0;
+}
 var PCLS   = {Development:'ph-dev',SIT:'ph-sit',UAT:'ph-uat',PENTEST:'ph-pentest',CCB:'ph-ccb',Pilot:'ph-pilot',Live:'ph-live'};
 var PCOL   = {'Mobile App':'#3b82f6','Internet Banking':'#6366f1','Leo':'#a855f7','POS':'#06b6d4','Web Team':'#16a34a','Cards':'#C8102E','USSD':'#d97706'};
 var DB_PATH = 'uba-digitalops/projects';
@@ -935,10 +989,13 @@ function saveProject(){
     if(note){if(!p.logs)p.logs=[];p.logs.push({date:today(),note:note});}
   } else {
     var maxId=projects.reduce(function(m,p){return Math.max(m,p.id);},0);
+    var newPhase = document.getElementById('f-phase').value;
+    var newProg = parseInt(document.getElementById('f-progress').value);
+    if (!newProg || newProg === 0) newProg = phaseToProgress(newPhase);
     projects.push({id:maxId+1,name:name,ba:ba,pm:pm,country:country,
       product:document.getElementById('f-product').value,
-      phase:document.getElementById('f-phase').value,
-      progress:parseInt(document.getElementById('f-progress').value)||0,
+      phase:newPhase,
+      progress:newProg,
       start:document.getElementById('f-start').value,
       target:document.getElementById('f-target').value,
       logs:note?[{date:today(),note:note}]:[]});
@@ -950,6 +1007,21 @@ function saveProject(){
 }
 
 // ── UPDATE ──
+function onPhaseChange() {
+  var phase = document.getElementById('u-phase').value;
+  var pct = phaseToProgress(phase);
+  document.getElementById('u-progress').value = pct;
+  document.getElementById('u-phase-pct').textContent = pct + '%';
+  // Update the visual bar
+  var phases = ['dev','sit','uat','pentest','ccb','pilot','live'];
+  var phaseKeys = ['Development','SIT','UAT','PENTEST','CCB','Pilot','Live'];
+  var activeIdx = phaseKeys.indexOf(phase);
+  phases.forEach(function(p, i) {
+    var el = document.getElementById('upp-'+p);
+    if (el) el.style.opacity = i <= activeIdx ? '0.9' : '0.2';
+  });
+}
+
 function openUpdateModal(id){
   updateId=id;
   var p=projects.find(function(x){return x.id===id;});
@@ -958,6 +1030,8 @@ function openUpdateModal(id){
   document.getElementById('u-progress').value=p.progress;
   document.getElementById('u-note').value='';
   document.getElementById('update-modal').style.display='flex';
+  // Trigger visual update for current phase
+  onPhaseChange();
 }
 function closeUpdateModal(){document.getElementById('update-modal').style.display='none';}
 function submitUpdate(){
