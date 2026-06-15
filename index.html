@@ -9,13 +9,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script>
 var FIREBASE_CONFIG = {
-  apiKey: "AIzaSyDB1Upcp3QmFYOKYR9PTK36iNviNiJtUFc",
-  authDomain: "digipulse-c2ae2.firebaseapp.com",
-  databaseURL: "https://digipulse-c2ae2-default-rtdb.firebaseio.com",
-  projectId: "digipulse-c2ae2",
-  storageBucket: "digipulse-c2ae2.firebasestorage.app",
-  messagingSenderId: "798551482503",
-  appId: "1:798551482503:web:4e66c4e57149264a105822"
+  apiKey: "AIzaSyBIP5FNhwhhD0NRE1GqrwCLgjFyeSiFiaU",
+  authDomain: "digitalops-c64b8.firebaseapp.com",
+  databaseURL: "https://digitalops-c64b8-default-rtdb.firebaseio.com",
+  projectId: "digitalops-c64b8",
+  storageBucket: "digitalops-c64b8.firebasestorage.app",
+  messagingSenderId: "339359275655",
+  appId: "1:339359275655:web:56f3186ebb1b6e0676b622",
+  measurementId: "G-Y5L7GY676H"
 };
 </script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -409,7 +410,7 @@ td{padding:11px 14px;font-size:13px;vertical-align:middle;color:var(--text)}
 
 // ── REGIONAL STRUCTURE ──
 var AFRICA1_COUNTRIES = ['Kenya','Mozambique','Tanzania','Uganda','Zambia','Ghana','Liberia','Sierra Leone'];
-var AFRICA2_COUNTRIES = ['Benin','Burkina Faso','Cote D\'Ivoire','Mali','Senegal','Guinea','Cameroon','Chad','Congo Brazzaville','Congo DRC','Gabon'];
+var AFRICA2_COUNTRIES = ['Benin','Burkina Faso','Cote D’Ivoire','Mali','Senegal','Guinea','Cameroon','Chad','Congo Brazzaville','Congo DRC','Gabon'];
 var NIGERIA_COUNTRIES = ['Nigeria'];
 var ALL_COUNTRIES = NIGERIA_COUNTRIES.concat(AFRICA1_COUNTRIES).concat(AFRICA2_COUNTRIES);
 
@@ -574,7 +575,7 @@ function renderNav() {
   var items = role==='pm'?pmItems:role==='exec'?execItems:hdItems;
   document.getElementById('nav').innerHTML = '<div class="nav-section">Navigation</div>'
     + items.map(function(i){
-        return '<div class="nav-item '+(currentPage===i.id?'active':'')+'" onclick="navigate(\''+i.id+'\')">'+i.icon+' '+i.label+'</div>';
+        return '<div class="nav-item '+(currentPage===i.id?'active':'')+'" onclick="navigate(&quot;'+i.id+'&quot;)">'+i.icon+' '+i.label+'</div>';
       }).join('');
   ['pm','hd','exec'].forEach(function(r2){
     document.getElementById('btn-'+r2).className='role-btn'+(role===r2?' active-role':'');
@@ -639,7 +640,7 @@ function renderTable() {
           ?'<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openUpdateModal('+p.id+')">Update</button> <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openEditModal('+p.id+')">Edit</button>'
           :'—';
         return '<tr onclick="openDetail('+p.id+')">'
-          +'<td><div class="av" style="background:'+avColor(p.pm||\'?\')+'">'+(p.pm?initials(p.pm):'?')+'</div></td>'
+          +'<td><div class="av" style="background:'+avColor(p.pm||'ZZ')+'">'+(p.pm?initials(p.pm):'?')+'</div></td>'
           +'<td style="font-weight:600;max-width:180px">'+p.name+(od?'<span class="overdue-flag">⚠ Overdue</span>':'')+'</td>'
           +'<td><span class="ptag" style="background:'+col+'18;color:'+col+';border:1px solid '+col+'30">'+p.product+'</span></td>'
           +'<td>'+regionBadge(p.country)+'</td>'
@@ -676,7 +677,7 @@ function renderTable() {
     // ── FILTER ROW 2: Regional structure
     +'<div class="filter-group" style="margin-bottom:14px">'
     +'<span class="filter-group-label">🌍 Filter by Region / Country</span>'
-    +'<select class="filter-select" onchange="fRegion=this.value;fCountry=\'all\';renderTable()">'
+    +'<select class="filter-select" onchange="fRegion=this.value;fCountry='all';renderTable()">'
     +'<option value="all"'+(fRegion==='all'?' selected':'')+'>All Regions</option>'
     +'<option value="Nigeria"'+(fRegion==='Nigeria'?' selected':'')+'>Nigeria</option>'
     +'<option value="Africa 1"'+(fRegion==='Africa 1'?' selected':'')+'>Africa 1</option>'
@@ -771,7 +772,7 @@ function renderHD() {
     +'</div>'
     +'<div class="filter-group" style="margin-bottom:16px">'
     +'<span class="filter-group-label">🌍 Region / Country</span>'
-    +'<select class="filter-select" onchange="hdRegion=this.value;hdCountry=\'all\';renderHD()">'
+    +'<select class="filter-select" onchange="hdRegion=this.value;hdCountry='all';renderHD()">'
     +'<option value="all"'+(hdRegion==='all'?' selected':'')+'>All Regions</option>'
     +'<option value="Nigeria"'+(hdRegion==='Nigeria'?' selected':'')+'>Nigeria</option>'
     +'<option value="Africa 1"'+(hdRegion==='Africa 1'?' selected':'')+'>Africa 1</option>'
@@ -1005,7 +1006,7 @@ function seedData(){
     {id:4,name:'Mobile Biometric Login',product:'Mobile App',country:'Nigeria',ba:'Chidi Obi',pm:'Ngozi Adeyemi',phase:'PENTEST',progress:78,start:'2025-01-15',target:'2025-06-15',logs:[{date:'2025-05-22',note:'Penetration test by vendor initiated'},{date:'2025-05-01',note:'UAT sign-off received'}]},
     {id:5,name:'Internet Banking Redesign',product:'Internet Banking',country:'Senegal',ba:'Funke Akinlade',pm:'Yemi Coker',phase:'Pilot',progress:88,start:'2024-11-01',target:'2025-06-01',logs:[{date:'2025-05-23',note:'Pilot with 500 users, feedback positive'}]},
     {id:6,name:'POS Offline Mode',product:'POS',country:'Tanzania',ba:'Ikenna Madu',pm:'Tunde Balogun',phase:'CCB',progress:82,start:'2025-01-10',target:'2025-07-01',logs:[{date:'2025-05-21',note:'CCB approved, awaiting live scheduling'}]},
-    {id:7,name:'Web Dashboard Analytics',product:'Web Team',country:'Cote D\'Ivoire',ba:'Seun Oluwole',pm:'Yemi Coker',phase:'Live',progress:100,start:'2024-09-01',target:'2025-03-01',logs:[{date:'2025-03-05',note:'Successfully deployed. Monitoring active'}]},
+    {id:7,name:'Web Dashboard Analytics',product:'Web Team',country:'Cote D’Ivoire',ba:'Seun Oluwole',pm:'Yemi Coker',phase:'Live',progress:100,start:'2024-09-01',target:'2025-03-01',logs:[{date:'2025-03-05',note:'Successfully deployed. Monitoring active'}]},
     {id:8,name:'QR Code Payments',product:'Mobile App',country:'Uganda',ba:'Blessing Odo',pm:'Sola Adeleke',phase:'Development',progress:15,start:'2025-05-01',target:'2025-11-30',logs:[{date:'2025-05-19',note:'Architecture design document shared'}]},
     {id:9,name:'Digital Lending Platform',product:'Internet Banking',country:'Cameroon',ba:'Adaeze Obi',pm:'Emeka Nwosu',phase:'SIT',progress:52,start:'2025-01-20',target:'2025-07-20',logs:[{date:'2025-05-15',note:'Core lending engine integration underway'}]},
     {id:10,name:'Agency Banking App',product:'Mobile App',country:'Nigeria',ba:'Kemi Ade',pm:'Ngozi Adeyemi',phase:'UAT',progress:70,start:'2025-02-10',target:'2025-06-28',logs:[{date:'2025-05-24',note:'UAT ongoing with 20 agents across 5 states'}]},
