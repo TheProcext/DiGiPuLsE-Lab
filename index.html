@@ -797,8 +797,26 @@ function loadPinsFromFirebase() {
   });
 }
 
+var appShown = false;
+
 function startListening() {
+  document.getElementById('loading-msg').textContent = 'Connecting to live data...';
+
+  // Safety net: if Firebase never responds within 10 seconds,
+  // fall back to seed data so the app still opens.
+  var listenTimeout = setTimeout(function() {
+    if (!appShown) {
+      console.warn('Firebase data listener timed out. Loading with local seed data.');
+      projects = seedData();
+      document.getElementById('sync-dot').className = 'sync-dot syncing';
+      document.getElementById('sync-label').textContent = '⚠ Offline';
+      showApp();
+      toast('⚠ Could not reach live database. Check Firebase Rules — showing demo data.', 'error');
+    }
+  }, 10000);
+
   db.ref(DB_PATH).on('value', function(snap) {
+    clearTimeout(listenTimeout);
     var data = snap.val();
     projects = data ? Object.values(data).sort(function(a,b){return a.id-b.id;}) : seedData();
     if (!data) saveToFirebase();
@@ -806,7 +824,17 @@ function startListening() {
     document.getElementById('sync-label').textContent = 'Live ✓';
     showApp();
   }, function(err) {
-    document.getElementById('loading-msg').textContent = '❌ Firebase connection failed. Check your config.';
+    clearTimeout(listenTimeout);
+    console.error('Firebase read error:', err);
+    document.getElementById('loading-msg').textContent = '❌ ' + err.message;
+    // Still show the app after a brief pause, using seed data, so the user isn't stuck
+    setTimeout(function(){
+      if (!appShown) {
+        projects = seedData();
+        showApp();
+        toast('⚠ Database read blocked: ' + err.message, 'error');
+      }
+    }, 2000);
   });
 }
 
@@ -850,13 +878,10 @@ function setSyncing(on) {
   l.textContent=on?'Saving…':'Live ✓';
 }
 function showApp() {
+  appShown = true;
   document.getElementById('loading-screen').style.display='none';
   document.getElementById('app').style.display='flex';
   renderNav(); renderContent();
-  // Show security status in sync pill
-  var authStatus = authUser ? '🔒 Secured' : 'Live ✓';
-  var sl = document.getElementById('sync-label');
-  if (sl) sl.textContent = authStatus;
 }
 
 // ── RAG ──
