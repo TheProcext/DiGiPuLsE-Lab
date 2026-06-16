@@ -726,14 +726,30 @@ function initApp() {
     try {
       if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
       db = firebase.database();
+
+      // Safety net: if auth/PIN loading takes longer than 8 seconds,
+      // proceed anyway with default PINs instead of hanging forever.
+      var proceedTimeout = setTimeout(function() {
+        if (!PINS_LOADED) {
+          console.warn('Firebase auth/config timed out. Proceeding with defaults.');
+          PINS = PINS_LOADED ? PINS : { pm: '1234', hd: '5678', exec: '9999' };
+          PINS_LOADED = true;
+          document.getElementById('loading-screen').style.display = 'none';
+          document.getElementById('pin-screen').style.display = 'flex';
+        }
+      }, 8000);
+
       // Step 1: Sign in anonymously to get a real auth token
       firebase.auth().signInAnonymously().then(function(result) {
         authUser = result.user;
+        clearTimeout(proceedTimeout);
         // Step 2: Load PINs from Firebase
         loadPinsFromFirebase();
       }).catch(function(e) {
-        // Auth failed — fall back to showing PIN screen without auth
-        // (works in demo mode)
+        // Auth failed (likely Anonymous sign-in not enabled in Firebase Console)
+        // Continue anyway — app still works, just without the auth token layer
+        console.warn('Anonymous auth failed: ' + e.message + '. Continuing without auth token.');
+        clearTimeout(proceedTimeout);
         loadPinsFromFirebase();
       });
     } catch(e) {
@@ -749,24 +765,35 @@ function initApp() {
 }
 
 function loadPinsFromFirebase() {
+  if (PINS_LOADED) return; // already proceeded via timeout
+
+  var pinTimeout = setTimeout(function() {
+    if (!PINS_LOADED) {
+      console.warn('Reading PINs from Firebase timed out. Using defaults.');
+      finishPinLoad({ pm: '1234', hd: '5678', exec: '9999' });
+    }
+  }, 6000);
+
+  function finishPinLoad(pinsObj) {
+    if (PINS_LOADED) return;
+    clearTimeout(pinTimeout);
+    PINS = pinsObj;
+    PINS_LOADED = true;
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('pin-screen').style.display = 'flex';
+  }
+
   db.ref('uba-digitalops/config/pins').once('value', function(snap) {
     var data = snap.val();
     if (data && data.pm && data.hd && data.exec) {
-      PINS = { pm: String(data.pm), hd: String(data.hd), exec: String(data.exec) };
+      finishPinLoad({ pm: String(data.pm), hd: String(data.hd), exec: String(data.exec) });
     } else {
-      // PINs not set in Firebase yet — use defaults and show a warning
-      PINS = { pm: '1234', hd: '5678', exec: '9999' };
       console.warn('PINs not found in Firebase. Using defaults. Set them at uba-digitalops/config/pins');
+      finishPinLoad({ pm: '1234', hd: '5678', exec: '9999' });
     }
-    PINS_LOADED = true;
-    document.getElementById('loading-screen').style.display = 'none';
-    document.getElementById('pin-screen').style.display = 'flex';
   }, function(err) {
-    // Can't read config — use defaults
-    PINS = { pm: '1234', hd: '5678', exec: '9999' };
-    PINS_LOADED = true;
-    document.getElementById('loading-screen').style.display = 'none';
-    document.getElementById('pin-screen').style.display = 'flex';
+    console.warn('Could not read PIN config: ' + err.message);
+    finishPinLoad({ pm: '1234', hd: '5678', exec: '9999' });
   });
 }
 
