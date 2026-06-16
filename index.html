@@ -844,13 +844,13 @@ function saveToFirebase() {
   setSyncing(true);
 
   function doSave() {
-    // Write each project individually to its own path.
-    // This matches the Firebase rule: $projectId level write permission.
-    var updates = {};
-    projects.forEach(function(p) {
-      updates['uba-digitalops/projects/' + p.id] = p;
+    // Write each project as a SEPARATE .set() call to its own exact path.
+    // (Multi-path root .update() gets blocked by nested $projectId rules —
+    // Firebase requires the write permission to exist at the path being written to.)
+    var promises = projects.map(function(p) {
+      return db.ref('uba-digitalops/projects/' + p.id).set(p);
     });
-    db.ref().update(updates)
+    Promise.all(promises)
       .then(function() { setSyncing(false); })
       .catch(function(e) {
         setSyncing(false);
