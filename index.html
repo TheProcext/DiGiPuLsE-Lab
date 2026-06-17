@@ -368,7 +368,7 @@ td{padding:11px 14px;font-size:13px;vertical-align:middle;color:var(--text)}
               <option>Liberia</option><option>Sierra Leone</option>
             </optgroup>
             <optgroup label="Africa 2">
-              <option>Benin</option><option>Burkina Faso</option><option>Cote D'Ivoire</option>
+              <option>Benin</option><option>Burkina Faso</option><option>Cote D’Ivoire</option>
               <option>Mali</option><option>Senegal</option><option>Guinea</option>
               <option>Cameroon</option><option>Chad</option><option>Congo Brazzaville</option>
               <option>Congo DRC</option><option>Gabon</option>
@@ -460,8 +460,22 @@ td{padding:11px 14px;font-size:13px;vertical-align:middle;color:var(--text)}
 <!-- DETAIL MODAL -->
 <div class="overlay" id="detail-modal" style="display:none">
   <div class="modal modal-lg">
-    <div class="modal-head"><h3 id="dm-title">Project Detail</h3><button class="close-btn" onclick="closeDetailModal()">✕</button></div>
+    <div class="modal-head"><h3 id="dm-title">Project Detail</h3><div style="display:flex;align-items:center;gap:8px"><button class="btn btn-ghost btn-sm" id="dm-delete-btn" style="color:#991b1b;border-color:#fecaca;display:none" onclick="confirmDeleteFromDetail()">🗑 Delete Project</button><button class="close-btn" onclick="closeDetailModal()">✕</button></div></div>
     <div class="modal-body" id="dm-body"></div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="overlay" id="delete-confirm-modal" style="display:none">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-head"><h3 style="color:#991b1b">⚠️ Delete Project</h3><button class="close-btn" onclick="closeDeleteConfirm()">✕</button></div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--text2);line-height:1.6">Are you sure you want to permanently delete <strong id="delete-project-name" style="color:var(--text)"></strong>? This action cannot be undone — all update logs for this project will also be removed.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeDeleteConfirm()">Cancel</button>
+      <button class="btn" style="background:#991b1b;color:#fff" onclick="executeDelete()">🗑 Delete Permanently</button>
+    </div>
   </div>
 </div>
 
@@ -996,7 +1010,7 @@ function renderTable() {
         var rag=getRAG(p),od=isOverdue(p),col=PCOL[p.product]||'#888';
         var region=getRegion(p.country);
         var btns=role==='pm'
-          ?'<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openUpdateModal('+p.id+')">Update</button> <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openEditModal('+p.id+')">Edit</button>'
+          ?'<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openUpdateModal('+p.id+')">Update</button> <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();openEditModal('+p.id+')">Edit</button> <button class="btn btn-ghost btn-sm" style="color:#991b1b;border-color:#fecaca" onclick="event.stopPropagation();confirmDeleteProject('+p.id+')">🗑</button>'
           :'—';
         return '<tr onclick="openDetail('+p.id+')">'
           +'<td><div class="av" style="background:'+avColor(p.pm||'ZZ')+'">'+(p.pm?initials(p.pm):'?')+'</div></td>'
@@ -1196,8 +1210,11 @@ function renderAnalytics(){
 }
 
 // ── DETAIL MODAL ──
+var currentDetailId = null;
 function openDetail(id){
   var p=projects.find(function(x){return x.id===id;}); if(!p)return;
+  currentDetailId = id;
+  document.getElementById('dm-delete-btn').style.display = (role==='pm') ? 'inline-flex' : 'none';
   var pi=PHASES.indexOf(p.phase),logs=p.logs||[],rag=getRAG(p),od=isOverdue(p);
   var col=PCOL[p.product]||'#888';
   var stepper=PHASES.map(function(ph,i){
@@ -1341,6 +1358,59 @@ function openUpdateModal(id){
   onPhaseChange();
 }
 function closeUpdateModal(){document.getElementById('update-modal').style.display='none';}
+
+// ── DELETE PROJECT ──
+var deleteTargetId = null;
+
+function confirmDeleteProject(id) {
+  var p = projects.find(function(x){ return x.id===id; });
+  if (!p) return;
+  deleteTargetId = id;
+  document.getElementById('delete-project-name').textContent = p.name;
+  document.getElementById('delete-confirm-modal').style.display = 'flex';
+}
+
+function confirmDeleteFromDetail() {
+  if (!currentDetailId) return;
+  closeDetailModal();
+  confirmDeleteProject(currentDetailId);
+}
+
+function closeDeleteConfirm() {
+  document.getElementById('delete-confirm-modal').style.display = 'none';
+  deleteTargetId = null;
+}
+
+function executeDelete() {
+  if (!deleteTargetId) return;
+  var p = projects.find(function(x){ return x.id===deleteTargetId; });
+  if (!p) { closeDeleteConfirm(); return; }
+
+  var deletedName = p.name;
+  var deletedId = deleteTargetId;
+
+  // Remove from local array immediately for instant UI feedback
+  projects = projects.filter(function(x){ return x.id !== deletedId; });
+
+  closeDeleteConfirm();
+  renderContent();
+  toast('🗑 Project deleted: ' + deletedName, 'success');
+
+  // Remove from Firebase — delete only this exact project path,
+  // does not touch any other project's data
+  if (configured && db) {
+    setSyncing(true);
+    db.ref('uba-digitalops/projects/' + deletedId).remove()
+      .then(function() {
+        setSyncing(false);
+        writeAuditLog('DELETE_PROJECT', role, 'Deleted project: ' + deletedName + ' (ID ' + deletedId + ')');
+      })
+      .catch(function(e) {
+        setSyncing(false);
+        toast('⚠ Deleted locally but failed to sync deletion: ' + e.message, 'error');
+      });
+  }
+}
 function submitUpdate(){
   var note=document.getElementById('u-note').value.trim();
   if(!note){toast('Please enter an update note','error');return;}
