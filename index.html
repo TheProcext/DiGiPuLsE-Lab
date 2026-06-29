@@ -248,6 +248,53 @@ td{padding:11px 14px;font-size:13px;vertical-align:middle;color:var(--text)}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
+
+/* ── TRACKER STYLES ── */
+.tracker-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.tracker-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.tracker-card h3{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.stagnant-item{display:flex;align-items:flex-start;gap:12px;padding:10px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;margin-bottom:8px}
+.stagnant-item.warn{background:#fffbeb;border-color:#fde68a}
+.stagnant-item .si-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.stagnant-item .si-body{flex:1}
+.stagnant-item .si-name{font-size:13px;font-weight:700;color:var(--text)}
+.stagnant-item .si-meta{font-size:11px;color:var(--text2);margin-top:2px}
+.stagnant-item .si-days{font-size:11px;font-weight:700;color:#991b1b;margin-top:4px}
+.stagnant-item.warn .si-days{color:#b45309}
+.activity-feed{display:flex;flex-direction:column;gap:0;max-height:340px;overflow-y:auto}
+.activity-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f3f4f6;align-items:flex-start}
+.activity-item:last-child{border-bottom:none}
+.activity-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.ad-login{background:#16a34a}
+.ad-update{background:#1a56db}
+.ad-add{background:#7c3aed}
+.ad-delete{background:#C8102E}
+.ad-failed{background:#d97706}
+.ad-logout{background:#9ca3af}
+.activity-item .ai-body{flex:1}
+.activity-item .ai-action{font-size:12px;font-weight:700;color:var(--text)}
+.activity-item .ai-meta{font-size:11px;color:var(--text2);margin-top:2px}
+.activity-item .ai-time{font-size:10px;color:var(--text3);margin-top:2px}
+.pm-accountability{display:flex;flex-direction:column;gap:8px}
+.pm-row{background:#f9fafb;border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.pm-row-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.pm-name{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+.pm-stats{display:flex;gap:12px;font-size:11px;color:var(--text2)}
+.pm-stat{display:flex;flex-direction:column;align-items:center}
+.pm-stat .psv{font-size:16px;font-weight:800;color:var(--text)}
+.velocity-bar{display:flex;align-items:center;gap:8px;margin-top:6px}
+.vel-label{font-size:10px;color:var(--text3);width:80px;flex-shrink:0}
+.vel-track{flex:1;height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden}
+.vel-fill{height:100%;border-radius:3px}
+.alert-banner{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px}
+.alert-banner .ab-icon{font-size:18px;flex-shrink:0}
+.alert-banner .ab-body{flex:1;font-size:13px;color:#7f1d1d;line-height:1.5}
+.alert-banner .ab-count{font-size:22px;font-weight:800;color:#C8102E;flex-shrink:0;align-self:center}
+.no-alerts{background:var(--green-soft);border:1px solid #bbf7d0;border-radius:8px;padding:14px;text-align:center;color:#15803d;font-size:13px;font-weight:600}
+.tracker-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:20px}
+.tracker-tab{padding:9px 18px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
+.tracker-tab:hover{color:var(--text)}
+.tracker-tab.active{color:var(--red);border-bottom-color:var(--red)}
 </style>
 </head>
 <body>
@@ -258,10 +305,11 @@ td{padding:11px 14px;font-size:13px;vertical-align:middle;color:var(--text)}
     <div class="pin-logo">UBA</div>
     <h2>Digital Banking Ops</h2>
     <p class="pin-sub">United Bank for Africa · Select your role</p>
-    <div class="pin-btns">
-      <button class="pin-role-btn" id="prb-pm" onclick="selectPinRole('pm')"><span style="font-size:18px">&#128203;</span><br/>Product Manager</button>
-      <button class="pin-role-btn" id="prb-hd"   onclick="selectPinRole('hd')">👁️<br/>Head of Digital</button>
-      <button class="pin-role-btn" id="prb-exec" onclick="selectPinRole('exec')">🏛️<br/>Executive</button>
+    <div class="pin-btns" style="grid-template-columns:1fr 1fr">
+      <button class="pin-role-btn" id="prb-pm"      onclick="selectPinRole('pm')">&#128203;<br/>Product Manager</button>
+      <button class="pin-role-btn" id="prb-hd"      onclick="selectPinRole('hd')">&#128065;<br/>Head of Digital</button>
+      <button class="pin-role-btn" id="prb-exec"    onclick="selectPinRole('exec')">&#127963;<br/>Executive</button>
+      <button class="pin-role-btn" id="prb-tracker" onclick="selectPinRole('tracker')">&#128269;<br/>Project Tracker</button>
     </div>
     <div id="pin-section" style="display:none;margin-top:18px">
       <p id="pin-role-label" style="font-size:12px;color:var(--text2);margin-bottom:2px;font-weight:600"></p>
@@ -322,9 +370,10 @@ td{padding:11px 14px;font-size:13px;vertical-align:middle;color:var(--text)}
     <nav class="nav" id="nav"></nav>
     <div class="role-switch">
       <div class="role-label">Switch View</div>
-      <button class="role-btn" id="btn-pm"   onclick="setRole('pm')">  <span>📋</span>Product Manager</button>
-      <button class="role-btn" id="btn-hd"   onclick="setRole('hd')">  <span>👁️</span>Head of Digital</button>
-      <button class="role-btn" id="btn-exec" onclick="setRole('exec')"><span>🏛️</span>Executive</button>
+      <button class="role-btn" id="btn-pm"      onclick="setRole('pm')">  <span>📋</span>Product Manager</button>
+      <button class="role-btn" id="btn-hd"      onclick="setRole('hd')">  <span>👁️</span>Head of Digital</button>
+      <button class="role-btn" id="btn-exec"    onclick="setRole('exec')"><span>🏛️</span>Executive</button>
+      <button class="role-btn" id="btn-tracker" onclick="setRole('tracker')"><span>🔍</span>Project Tracker</button>
       <button class="role-btn" style="margin-top:4px;color:var(--text3)" onclick="showPinScreen()"><span>🔓</span>Switch Account</button>
     </div>
   </div>
@@ -504,9 +553,10 @@ function getRegion(country) {
 // hd        = Head of Digital Banking (sees all, filtered by region they lead)
 // exec      = Executive (Africa 1 CEO / Africa 2 CEO / Nigeria Exec Director)
 var ROLE_LABELS = {
-  pm:   'Product Manager',
-  hd:   'Head of Digital Banking',
-  exec: 'Executive'
+  pm:      'Product Manager',
+  hd:      'Head of Digital Banking',
+  exec:    'Executive',
+  tracker: 'Project Tracker'
 };
 
 // PINs are loaded from Firebase — not stored in this file
@@ -675,8 +725,9 @@ function validateProject(p) {
 function selectPinRole(r) {
   if (isLockedOut()) { showLockoutScreen(); return; }
   pinRole = r;
-  ['pm','hd','exec'].forEach(function(k){
-    document.getElementById('prb-'+k).className = 'pin-role-btn' + (k===r?' selected':'');
+  ['pm','hd','exec','tracker'].forEach(function(k){
+    var el = document.getElementById('prb-'+k);
+    if (el) el.className = 'pin-role-btn' + (k===r?' selected':'');
   });
   document.getElementById('pin-section').style.display = 'block';
   document.getElementById('pin-role-label').textContent = 'Enter PIN for: ' + ROLE_LABELS[r];
@@ -771,7 +822,7 @@ function initApp() {
     }
   } else {
     // Demo mode — use default PINs
-    PINS = { pm: '1234', hd: '5678', exec: '9999' };
+    PINS = { pm: '1234', hd: '5678', exec: '9999', tracker: '0000' };
     PINS_LOADED = true;
     document.getElementById('loading-screen').style.display = 'none';
     document.getElementById('pin-screen').style.display = 'flex';
@@ -928,29 +979,35 @@ function regionBadge(country) {
 
 // ── NAV ──
 function renderNav() {
-  var pmItems = [{id:'projects',icon:'📋',label:'All Projects'},{id:'add',icon:'➕',label:'Add Project'}];
-  var hdItems = [{id:'dashboard',icon:'📊',label:'Live Dashboard'},{id:'projects',icon:'📋',label:'All Projects'},{id:'analytics',icon:'📈',label:'Analytics'}];
-  var execItems = [{id:'dashboard',icon:'📊',label:'Executive View'},{id:'projects',icon:'📋',label:'All Projects'},{id:'analytics',icon:'📈',label:'Analytics'}];
-  var items = role==='pm'?pmItems:role==='exec'?execItems:hdItems;
+  var pmItems      = [{id:'projects',icon:'📋',label:'All Projects'},{id:'add',icon:'➕',label:'Add Project'}];
+  var hdItems      = [{id:'dashboard',icon:'📊',label:'Live Dashboard'},{id:'projects',icon:'📋',label:'All Projects'},{id:'analytics',icon:'📈',label:'Analytics'}];
+  var execItems    = [{id:'dashboard',icon:'📊',label:'Executive View'},{id:'projects',icon:'📋',label:'All Projects'},{id:'analytics',icon:'📈',label:'Analytics'}];
+  var trackerItems = [{id:'tracker-dashboard',icon:'🔍',label:'Tracker Dashboard'},{id:'tracker-activity',icon:'📜',label:'Activity Feed'},{id:'tracker-alerts',icon:'🚨',label:'Stagnation Alerts'},{id:'tracker-accountability',icon:'👤',label:'PM Accountability'},{id:'projects',icon:'📋',label:'All Projects (View)'}];
+  var items = role==='pm'?pmItems:role==='exec'?execItems:role==='tracker'?trackerItems:hdItems;
   document.getElementById('nav').innerHTML = '<div class="nav-section">Navigation</div>'
     + items.map(function(i){
         return '<div class="nav-item '+(currentPage===i.id?'active':'')+'" data-id="'+i.id+'" onclick="navigate(this.dataset.id)">'+i.icon+' '+i.label+'</div>';
       }).join('');
-  ['pm','hd','exec'].forEach(function(r2){
-    document.getElementById('btn-'+r2).className='role-btn'+(role===r2?' active-role':'');
+  ['pm','hd','exec','tracker'].forEach(function(r2){
+    var el = document.getElementById('btn-'+r2);
+    if (el) el.className='role-btn'+(role===r2?' active-role':'');
   });
-  document.getElementById('avatar-chip').textContent=role==='exec'?'EX':role==='hd'?'HD':'PM';
-  document.getElementById('page-sub').textContent=ROLE_LABELS[role]+' · United Bank for Africa';
+  var ac=document.getElementById('avatar-chip'); if(ac) ac.textContent=role==='exec'?'EX':role==='hd'?'HD':role==='tracker'?'TR':'PM';
+  var ps=document.getElementById('page-sub'); if(ps) ps.textContent=(ROLE_LABELS[role]||role)+' · United Bank for Africa';
 }
 
 function navigate(p){
   if(p==='add'){currentPage='projects';renderNav();openAddModal();return;}
   currentPage=p;renderNav();renderContent();
 }
-function setRole(r){role=r;currentPage=(r==='hd'||r==='exec')?'dashboard':'projects';renderNav();renderContent();}
+function setRole(r){role=r;currentPage=(r==='hd'||r==='exec')?'dashboard':r==='tracker'?'tracker-dashboard':'projects';renderNav();renderContent();}
 function renderContent(){
   if(currentPage==='dashboard'&&(role==='hd'||role==='exec')){renderHD();return;}
   if(currentPage==='analytics'){renderAnalytics();return;}
+  if(currentPage==='tracker-dashboard'){renderTrackerDashboard();return;}
+  if(currentPage==='tracker-activity'){renderTrackerActivity();return;}
+  if(currentPage==='tracker-alerts'){renderTrackerAlerts();return;}
+  if(currentPage==='tracker-accountability'){renderTrackerAccountability();return;}
   renderTable();
 }
 
@@ -1177,6 +1234,267 @@ function renderHD() {
 }
 
 // ── ANALYTICS ──
+
+// ══════════════════════════════════════════════════════════════
+// TRACKER ROLE — 4 views
+// ══════════════════════════════════════════════════════════════
+
+// How many days since a project's last update log entry
+function daysSinceLastUpdate(p) {
+  if (!p.logs || p.logs.length === 0) return 9999;
+  var last = p.logs[p.logs.length - 1].date;
+  var diff = (Date.now() - new Date(last).getTime()) / (1000 * 60 * 60 * 24);
+  return Math.floor(diff);
+}
+
+// Stagnation threshold in days per phase
+function getStagnationThreshold(phase) {
+  var t = {Development:14, SIT:10, UAT:10, PENTEST:7, CCB:5, Pilot:7, Live:9999};
+  return t[phase] || 14;
+}
+
+function isStagnant(p) {
+  if (p.phase === 'Live') return false;
+  var days = daysSinceLastUpdate(p);
+  return days > getStagnationThreshold(p.phase);
+}
+
+function isAtRiskOfStagnation(p) {
+  if (p.phase === 'Live') return false;
+  var days = daysSinceLastUpdate(p);
+  var threshold = getStagnationThreshold(p.phase);
+  return days > (threshold * 0.6) && days <= threshold;
+}
+
+// Calculate progress velocity — average % gained per week over all logs
+function getVelocity(p) {
+  if (!p.logs || p.logs.length < 2) return null;
+  var first = new Date(p.logs[0].date).getTime();
+  var last  = new Date(p.logs[p.logs.length-1].date).getTime();
+  var weeks = (last - first) / (1000 * 60 * 60 * 24 * 7);
+  if (weeks < 0.5) return null;
+  return Math.round(p.progress / weeks * 10) / 10;
+}
+
+// ── TRACKER DASHBOARD ──
+function renderTrackerDashboard() {
+  document.getElementById('page-title').textContent = 'Tracker Dashboard';
+  var stagnantList   = projects.filter(isStagnant);
+  var atRiskList     = projects.filter(isAtRiskOfStagnation);
+  var liveCount      = projects.filter(function(p){ return p.phase==='Live'; }).length;
+  var activeCount    = projects.length - liveCount;
+  var onTrack        = projects.filter(function(p){ return !isStagnant(p) && !isAtRiskOfStagnation(p) && p.phase!=='Live'; }).length;
+
+  var alertBanner = stagnantList.length > 0
+    ? '<div class="alert-banner"><div class="ab-icon">🚨</div><div class="ab-body"><strong>'+stagnantList.length+' project'+(stagnantList.length!==1?'s':'')+' have stalled</strong> and need immediate attention. No update has been logged within the expected timeframe for the current phase.</div><div class="ab-count">'+stagnantList.length+'</div></div>'
+    : '<div class="no-alerts">✅ All active projects are progressing on schedule</div>';
+
+  document.getElementById('content').innerHTML =
+    '<div class="stats" style="margin-bottom:16px">'
+    +'<div class="stat-card sc-red"><div class="s-label">Total Projects</div><div class="s-val">'+projects.length+'</div><div class="s-sub">All regions</div></div>'
+    +'<div class="stat-card sc-gray"><div class="s-label">Active</div><div class="s-val" style="color:#1a56db">'+activeCount+'</div><div class="s-sub">In progress</div></div>'
+    +'<div class="stat-card sc-green"><div class="s-label">On Schedule</div><div class="s-val" style="color:#15803d">'+onTrack+'</div><div class="s-sub">Moving steadily</div></div>'
+    +'<div class="stat-card sc-amber"><div class="s-label">At Risk</div><div class="s-val" style="color:#b45309">'+atRiskList.length+'</div><div class="s-sub">Slowing down</div></div>'
+    +'<div class="stat-card sc-red"><div class="s-label">Stalled</div><div class="s-val" style="color:#991b1b">'+stagnantList.length+'</div><div class="s-sub">No recent update</div></div>'
+    +'<div class="stat-card sc-blue"><div class="s-label">Live</div><div class="s-val" style="color:#1e40af">'+liveCount+'</div><div class="s-sub">Deployed</div></div>'
+    +'</div>'
+
+    + alertBanner
+
+    +'<div class="tracker-grid">'
+
+    // Stalled projects
+    +'<div class="tracker-card"><h3>🚨 Stalled Projects</h3>'
+    +(stagnantList.length===0
+      ? '<div style="font-size:12px;color:var(--text3);padding:8px">None — all projects have recent activity.</div>'
+      : stagnantList.map(function(p){
+          var days = daysSinceLastUpdate(p);
+          var threshold = getStagnationThreshold(p.phase);
+          return '<div class="stagnant-item">'
+            +'<div class="si-icon">🔴</div>'
+            +'<div class="si-body">'
+            +'<div class="si-name">'+p.name+'</div>'
+            +'<div class="si-meta">'+p.product+' · '+p.country+' · Phase: '+p.phase+'</div>'
+            +'<div class="si-meta">PM: <strong>'+p.pm+'</strong> · BA: <strong>'+p.ba+'</strong></div>'
+            +'<div class="si-days">⏱ No update for '+days+' days (limit: '+threshold+' days in '+p.phase+')</div>'
+            +'</div></div>';
+        }).join('')
+    )+'</div>'
+
+    // At risk projects
+    +'<div class="tracker-card"><h3>⚠️ At Risk of Stalling</h3>'
+    +(atRiskList.length===0
+      ? '<div style="font-size:12px;color:var(--text3);padding:8px">None currently at risk.</div>'
+      : atRiskList.map(function(p){
+          var days = daysSinceLastUpdate(p);
+          var threshold = getStagnationThreshold(p.phase);
+          return '<div class="stagnant-item warn">'
+            +'<div class="si-icon">🟡</div>'
+            +'<div class="si-body">'
+            +'<div class="si-name">'+p.name+'</div>'
+            +'<div class="si-meta">'+p.product+' · '+p.country+' · Phase: '+p.phase+'</div>'
+            +'<div class="si-meta">PM: <strong>'+p.pm+'</strong></div>'
+            +'<div class="si-days" style="color:#b45309">⏱ '+days+' of '+threshold+' day limit reached</div>'
+            +'</div></div>';
+        }).join('')
+    )+'</div>'
+
+    +'</div>'; // end tracker-grid
+}
+
+// ── TRACKER ACTIVITY FEED ──
+function renderTrackerActivity() {
+  document.getElementById('page-title').textContent = 'Activity Feed';
+  var feedEl = '<div class="tracker-card" style="max-width:700px">'
+    +'<h3>📜 Live Activity Log — Last 50 Actions</h3>'
+    +'<div style="font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.5">Every login, update, and project change made by any team member is recorded here in real time.</div>';
+
+  if (!configured || !db) {
+    feedEl += '<div style="color:var(--text2);font-size:13px;padding:16px;text-align:center">Connect to Firebase to see live activity.</div></div>';
+    document.getElementById('content').innerHTML = feedEl;
+    return;
+  }
+
+  feedEl += '<div class="activity-feed" id="af-list"><div style="color:var(--text3);font-size:12px;padding:12px">Loading activity...</div></div></div>';
+  document.getElementById('content').innerHTML = feedEl;
+
+  // Load last 50 audit log entries from Firebase, newest first
+  db.ref('uba-digitalops/audit_log').orderByChild('ts').limitToLast(50).once('value', function(snap) {
+    var entries = [];
+    snap.forEach(function(child){ entries.push(child.val()); });
+    entries.reverse(); // newest first
+
+    var dotClass = {
+      LOGIN:'ad-login', LOGOUT:'ad-logout', FAILED_LOGIN:'ad-failed',
+      ADD_PROJECT:'ad-add', UPDATE_PROJECT:'ad-update', POST_UPDATE:'ad-update',
+      DELETE_PROJECT:'ad-delete', LOCKOUT:'ad-failed', SESSION_EXPIRED:'ad-failed'
+    };
+    var actionLabel = {
+      LOGIN:'Logged in', LOGOUT:'Logged out', FAILED_LOGIN:'Failed PIN attempt',
+      ADD_PROJECT:'Added project', UPDATE_PROJECT:'Edited project', POST_UPDATE:'Posted update',
+      DELETE_PROJECT:'Deleted project', LOCKOUT:'Account locked out', SESSION_EXPIRED:'Session expired'
+    };
+
+    var html = entries.length === 0
+      ? '<div style="color:var(--text3);font-size:12px;padding:12px;text-align:center">No activity recorded yet.</div>'
+      : entries.map(function(e) {
+          var dc = dotClass[e.action] || 'ad-update';
+          var al = actionLabel[e.action] || e.action;
+          var ts = e.timestamp ? new Date(e.timestamp).toLocaleString('en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+          return '<div class="activity-item">'
+            +'<div class="activity-dot '+dc+'"></div>'
+            +'<div class="ai-body">'
+            +'<div class="ai-action">'+al+'</div>'
+            +'<div class="ai-meta">'+(e.detail||'')+'</div>'
+            +'<div class="ai-time">'+e.role+' · Session: '+String(e.sessionId||'').slice(-6)+' · '+ts+'</div>'
+            +'</div></div>';
+        }).join('');
+
+    document.getElementById('af-list').innerHTML = html;
+  }, function(err) {
+    document.getElementById('af-list').innerHTML = '<div style="color:#991b1b;font-size:12px;padding:12px">Could not load activity: '+err.message+'</div>';
+  });
+}
+
+// ── TRACKER ALERTS VIEW ──
+function renderTrackerAlerts() {
+  document.getElementById('page-title').textContent = 'Stagnation Alerts';
+
+  var all = projects.filter(function(p){ return p.phase !== 'Live'; });
+  all.sort(function(a,b){ return daysSinceLastUpdate(b) - daysSinceLastUpdate(a); }); // worst first
+
+  var rows = all.map(function(p) {
+    var days = daysSinceLastUpdate(p);
+    var threshold = getStagnationThreshold(p.phase);
+    var pct = Math.min(100, Math.round((days/threshold)*100));
+    var color = days > threshold ? '#C8102E' : days > threshold*0.6 ? '#d97706' : '#16a34a';
+    var status = days > threshold ? '🔴 STALLED' : days > threshold*0.6 ? '🟡 AT RISK' : '🟢 OK';
+    var vel = getVelocity(p);
+    var velStr = vel !== null ? vel + '% / week' : 'N/A';
+    return '<tr style="cursor:pointer" onclick="openDetail('+p.id+')">'
+      +'<td style="font-weight:600">'+p.name+'</td>'
+      +'<td><span class="ptag" style="background:'+PCOL[p.product]+'18;color:'+PCOL[p.product]+';border:1px solid '+PCOL[p.product]+'30">'+p.product+'</span></td>'
+      +'<td>'+regionBadge(p.country)+'</td>'
+      +'<td><span class="phase '+PCLS[p.phase]+'">'+p.phase+'</span></td>'
+      +'<td style="font-size:12px">'+p.pm+'</td>'
+      +'<td style="font-size:12px;font-weight:700;color:'+color+'">'+days+' days</td>'
+      +'<td style="font-size:11px;color:var(--text2)">'+threshold+' days</td>'
+      +'<td>'
+      +'<div style="display:flex;align-items:center;gap:6px">'
+      +'<div class="prog-bar" style="min-width:60px"><div class="prog-fill" style="width:'+pct+'%;background:'+color+'"></div></div>'
+      +'<span style="font-size:11px;font-weight:700;color:'+color+'">'+status+'</span>'
+      +'</div>'
+      +'</td>'
+      +'<td style="font-size:11px;color:var(--text2)">'+velStr+'</td>'
+      +'</tr>';
+  }).join('');
+
+  document.getElementById('content').innerHTML =
+    '<div class="callout info" style="background:#e8f0fe;border:1px solid #bfdbfe;border-radius:8px;padding:12px 16px;font-size:13px;color:#1e3a8a;margin-bottom:16px;line-height:1.6">'
+    +'<strong>Stagnation thresholds by phase:</strong> Development 14 days · SIT 10 days · UAT 10 days · PENTEST 7 days · CCB 5 days · Pilot 7 days. A project with no update log beyond these limits is flagged as Stalled.'
+    +'</div>'
+    +'<div class="table-wrap"><table>'
+    +'<thead><tr><th>Project</th><th>Product</th><th>Region</th><th>Phase</th><th>Product Manager</th><th>Days Since Update</th><th>Phase Limit</th><th>Status</th><th>Velocity</th></tr></thead>'
+    +'<tbody>'+(all.length===0?'<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text3)">No active projects found.</td></tr>':rows)+'</tbody>'
+    +'</table></div>';
+}
+
+// ── TRACKER PM ACCOUNTABILITY ──
+function renderTrackerAccountability() {
+  document.getElementById('page-title').textContent = 'PM Accountability';
+
+  // Group projects by PM
+  var pmMap = {};
+  projects.forEach(function(p) {
+    if (!pmMap[p.pm]) pmMap[p.pm] = [];
+    pmMap[p.pm].push(p);
+  });
+
+  var pmRows = Object.keys(pmMap).sort().map(function(pmName) {
+    var ps = pmMap[pmName];
+    var live      = ps.filter(function(p){ return p.phase==='Live'; }).length;
+    var stalled   = ps.filter(isStagnant).length;
+    var atRisk    = ps.filter(isAtRiskOfStagnation).length;
+    var avgProg   = Math.round(ps.reduce(function(a,p){return a+p.progress;},0)/ps.length);
+    var avCol     = avColor(pmName);
+
+    var projectBars = ps.map(function(p){
+      var vel = getVelocity(p);
+      var daysSince = daysSinceLastUpdate(p);
+      var stagnant = isStagnant(p);
+      var col = stagnant ? '#C8102E' : p.phase==='Live' ? '#16a34a' : '#1a56db';
+      return '<div class="velocity-bar">'
+        +'<div class="vel-label" style="font-size:10px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+p.name+'</div>'
+        +'<div class="vel-track"><div class="vel-fill" style="width:'+p.progress+'%;background:'+col+'"></div></div>'
+        +'<span style="font-size:10px;font-weight:700;color:'+col+';width:30px;text-align:right">'+p.progress+'%</span>'
+        +(stagnant ? '<span style="font-size:10px;color:#991b1b;margin-left:4px" title="Stalled: no update in '+daysSince+' days">⚠</span>' : '')
+        +(vel!==null ? '<span style="font-size:9px;color:var(--text3);margin-left:6px">'+vel+'%/wk</span>' : '')
+        +'</div>';
+    }).join('');
+
+    return '<div class="pm-row">'
+      +'<div class="pm-row-head">'
+      +'<div class="pm-name"><div class="av" style="background:'+avCol+';width:26px;height:26px;font-size:10px">'+initials(pmName)+'</div>'+pmName+'</div>'
+      +'<div class="pm-stats">'
+      +'<div class="pm-stat"><span class="psv">'+ps.length+'</span><span>Total</span></div>'
+      +'<div class="pm-stat"><span class="psv" style="color:#16a34a">'+live+'</span><span>Live</span></div>'
+      +'<div class="pm-stat"><span class="psv" style="color:#d97706">'+atRisk+'</span><span>At Risk</span></div>'
+      +'<div class="pm-stat"><span class="psv" style="color:#C8102E">'+stalled+'</span><span>Stalled</span></div>'
+      +'<div class="pm-stat"><span class="psv" style="color:#1a56db">'+avgProg+'%</span><span>Avg</span></div>'
+      +'</div>'
+      +'</div>'
+      + projectBars
+      +'</div>';
+  }).join('');
+
+  document.getElementById('content').innerHTML =
+    '<div style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.5">'
+    +'Track each Product Manager portfolio — how many projects are live, stalled, at risk, and the average progress. A ⚠ flag means that specific project has gone silent.'
+    +'</div>'
+    +'<div class="pm-accountability">'+pmRows+'</div>';
+}
+
+
 var chartInstances={};
 function renderAnalytics(){
   document.getElementById('page-title').textContent='Analytics & Insights';
