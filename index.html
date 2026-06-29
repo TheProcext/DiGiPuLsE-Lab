@@ -369,12 +369,20 @@ td{padding:11px 14px;font-size:13px;vertical-align:middle;color:var(--text)}
     </div>
     <nav class="nav" id="nav"></nav>
     <div class="role-switch">
-      <div class="role-label">Switch View</div>
-      <button class="role-btn" id="btn-pm"      onclick="setRole('pm')">  <span>📋</span>Product Manager</button>
-      <button class="role-btn" id="btn-hd"      onclick="setRole('hd')">  <span>👁️</span>Head of Digital</button>
-      <button class="role-btn" id="btn-exec"    onclick="setRole('exec')"><span>🏛️</span>Executive</button>
-      <button class="role-btn" id="btn-tracker" onclick="setRole('tracker')"><span>🔍</span>Project Tracker</button>
-      <button class="role-btn" style="margin-top:4px;color:var(--text3)" onclick="showPinScreen()"><span>🔓</span>Switch Account</button>
+      <div class="role-label">Logged in as</div>
+      <!-- Shows current role — read only. Switching requires fresh PIN login. -->
+      <div id="current-role-display" style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--red-soft);border:1px solid var(--red-border);border-radius:8px;margin-bottom:8px">
+        <span id="current-role-icon" style="font-size:14px">📋</span>
+        <div>
+          <div id="current-role-label" style="font-size:12px;font-weight:700;color:var(--red)">Product Manager</div>
+          <div style="font-size:10px;color:var(--text2)">PIN-verified session</div>
+        </div>
+        <div id="btn-pm"      style="display:none"></div>
+        <div id="btn-hd"      style="display:none"></div>
+        <div id="btn-exec"    style="display:none"></div>
+        <div id="btn-tracker" style="display:none"></div>
+      </div>
+      <button class="role-btn" style="color:var(--text2);font-size:12px;justify-content:center" onclick="showPinScreen()"><span>🔓</span>Switch Account</button>
     </div>
   </div>
 
@@ -776,12 +784,22 @@ function checkPin() {
   }
 }
 function showPinScreen() {
-  writeAuditLog('LOGOUT', role, 'User switched account / logged out');
+  writeAuditLog('LOGOUT', role, 'User logged out from role: ' + (ROLE_LABELS[role]||role));
+  // Clear role so the next session starts completely fresh
+  role = null;
+  pinRole = '';
+  pinBuffer = '';
+  appShown = false;
+  if (sessionBarTimer) clearInterval(sessionBarTimer);
+  // Reset all PIN role buttons to unselected
+  ['pm','hd','exec','tracker'].forEach(function(k){
+    var el = document.getElementById('prb-'+k);
+    if (el) el.className = 'pin-role-btn';
+  });
+  document.getElementById('pin-section').style.display = 'none';
+  document.getElementById('pin-err').textContent = '';
   document.getElementById('app').style.display = 'none';
   document.getElementById('pin-screen').style.display = 'flex';
-  document.getElementById('pin-section').style.display = 'none';
-  if (sessionBarTimer) clearInterval(sessionBarTimer);
-  pinBuffer = '';
 }
 
 // ── FIREBASE INIT ──
@@ -946,7 +964,8 @@ function showApp() {
   appShown = true;
   document.getElementById('loading-screen').style.display='none';
   document.getElementById('app').style.display='flex';
-  renderNav(); renderContent();
+  renderNav();
+  renderContent();
 }
 
 // ── RAG ──
@@ -988,10 +1007,13 @@ function renderNav() {
     + items.map(function(i){
         return '<div class="nav-item '+(currentPage===i.id?'active':'')+'" data-id="'+i.id+'" onclick="navigate(this.dataset.id)">'+i.icon+' '+i.label+'</div>';
       }).join('');
-  ['pm','hd','exec','tracker'].forEach(function(r2){
-    var el = document.getElementById('btn-'+r2);
-    if (el) el.className='role-btn'+(role===r2?' active-role':'');
-  });
+  // Update the role display label in sidebar
+  var roleIcons = {pm:'📋', hd:'👁️', exec:'🏛️', tracker:'🔍'};
+  var roleNames = {pm:'Product Manager', hd:'Head of Digital', exec:'Executive', tracker:'Project Tracker'};
+  var iconEl  = document.getElementById('current-role-icon');
+  var labelEl = document.getElementById('current-role-label');
+  if (iconEl)  iconEl.textContent  = roleIcons[role]  || '👤';
+  if (labelEl) labelEl.textContent = roleNames[role] || role;
   var ac=document.getElementById('avatar-chip'); if(ac) ac.textContent=role==='exec'?'EX':role==='hd'?'HD':role==='tracker'?'TR':'PM';
   var ps=document.getElementById('page-sub'); if(ps) ps.textContent=(ROLE_LABELS[role]||role)+' · United Bank for Africa';
 }
@@ -1000,7 +1022,17 @@ function navigate(p){
   if(p==='add'){currentPage='projects';renderNav();openAddModal();return;}
   currentPage=p;renderNav();renderContent();
 }
-function setRole(r){role=r;currentPage=(r==='hd'||r==='exec')?'dashboard':r==='tracker'?'tracker-dashboard':'projects';renderNav();renderContent();}
+function setRole(r){
+  // If trying to switch to a DIFFERENT role, force PIN re-authentication
+  if (r !== role) {
+    toast('Please log in again to access a different role.', 'error');
+    setTimeout(function(){ showPinScreen(); }, 1200);
+    return;
+  }
+  // Same role — just navigate to the default page for that role
+  currentPage=(r==='hd'||r==='exec')?'dashboard':r==='tracker'?'tracker-dashboard':'projects';
+  renderNav();renderContent();
+}
 function renderContent(){
   if(currentPage==='dashboard'&&(role==='hd'||role==='exec')){renderHD();return;}
   if(currentPage==='analytics'){renderAnalytics();return;}
