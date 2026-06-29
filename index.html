@@ -760,15 +760,28 @@ function checkPin() {
     pinBuffer = ''; updatePinDots(); return;
   }
   if (isLockedOut()) { showLockoutScreen(); return; }
-  if (PINS[pinRole] && pinBuffer === PINS[pinRole]) {
+  var expectedPin = PINS[pinRole] ? String(PINS[pinRole]) : null;
+  var enteredPin  = String(pinBuffer);
+  if (expectedPin && enteredPin === expectedPin) {
     failedAttempts = 0;
     localStorage.setItem('uba_failed_attempts', '0');
     document.getElementById('pin-screen').style.display = 'none';
     document.getElementById('loading-screen').style.display = 'flex';
     role = pinRole;
-    writeAuditLog('LOGIN', pinRole, 'Successful login as ' + ROLE_LABELS[pinRole]);
+    // Lock the session to this role — set correct default page immediately
+    currentPage = (role==='hd'||role==='exec') ? 'dashboard'
+                : role==='tracker'             ? 'tracker-dashboard'
+                : 'projects';
+    writeAuditLog('LOGIN', pinRole, 'Successful login as ' + (ROLE_LABELS[pinRole]||pinRole));
     startSession();
-    startListening();
+    // If already connected to Firebase, skip re-listening and just show app
+    if (appShown || (projects && projects.length > 0)) {
+      document.getElementById('loading-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'flex';
+      renderNav(); renderContent();
+    } else {
+      startListening();
+    }
   } else {
     failedAttempts++;
     localStorage.setItem('uba_failed_attempts', failedAttempts.toString());
@@ -815,7 +828,7 @@ function initApp() {
       var proceedTimeout = setTimeout(function() {
         if (!PINS_LOADED) {
           console.warn('Firebase auth/config timed out. Proceeding with defaults.');
-          PINS = PINS_LOADED ? PINS : { pm: '1234', hd: '5678', exec: '9999' };
+          PINS = PINS_LOADED ? PINS : { pm: '1234', hd: '5678', exec: '9999', tracker: '0000' };
           PINS_LOADED = true;
           document.getElementById('loading-screen').style.display = 'none';
           document.getElementById('pin-screen').style.display = 'flex';
@@ -853,7 +866,7 @@ function loadPinsFromFirebase() {
   var pinTimeout = setTimeout(function() {
     if (!PINS_LOADED) {
       console.warn('Reading PINs from Firebase timed out. Using defaults.');
-      finishPinLoad({ pm: '1234', hd: '5678', exec: '9999' });
+      finishPinLoad({ pm: '1234', hd: '5678', exec: '9999', tracker: '0000' });
     }
   }, 6000);
 
@@ -869,14 +882,14 @@ function loadPinsFromFirebase() {
   db.ref('uba-digitalops/config/pins').once('value', function(snap) {
     var data = snap.val();
     if (data && data.pm && data.hd && data.exec) {
-      finishPinLoad({ pm: String(data.pm), hd: String(data.hd), exec: String(data.exec) });
+      finishPinLoad({ pm: String(data.pm), hd: String(data.hd), exec: String(data.exec), tracker: String(data.tracker || '0000') });
     } else {
       console.warn('PINs not found in Firebase. Using defaults. Set them at uba-digitalops/config/pins');
-      finishPinLoad({ pm: '1234', hd: '5678', exec: '9999' });
+      finishPinLoad({ pm: '1234', hd: '5678', exec: '9999', tracker: '0000' });
     }
   }, function(err) {
     console.warn('Could not read PIN config: ' + err.message);
-    finishPinLoad({ pm: '1234', hd: '5678', exec: '9999' });
+    finishPinLoad({ pm: '1234', hd: '5678', exec: '9999', tracker: '0000' });
   });
 }
 
